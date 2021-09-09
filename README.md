@@ -5,15 +5,15 @@ A mobile application where diabetics can enter and track sugar level trends.
 
 #### Frontend
 * React Native
+* *NextJS
 
 #### Backend
 * Python
-* #Django
+* Django
 * PostgreSQL
-* Vercel
-* NextJS
 
 #### Deployment, Testing, Linter, etc.
+* Vercel
 
 ## Contributors
 * Amalia Bryant 
