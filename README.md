@@ -17,6 +17,14 @@ A mobile application where diabetics can enter and track sugar level trends.
 
 
 ## Contributors
-* Amalia Bryant 
+* Amalia Bryant
 * Caleb Brodrick
 * Joseph Peck
+
+## Setup for Dev
+* Make sure you update all packages: ```sudo apt-get update```
+* Install Python: ```sudo apt install python3-pip```
+* Install Django: ```pip install Django==3.2.7```
+* Install python-django: ```sudo apt install python3-django```
+* Install django REST: ```pip install djangorestframework```
+* Make sure 'rest_framework' is within INSTALLED APPS in settings.py in your project folder.
