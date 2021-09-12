@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
+import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
@@ -33,27 +34,32 @@ export default function Home() {
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Sugar Chart
-        </h1>
-        <form className={classes.root} noValidate autoComplete="off">
-        <TextField
-          required
-          id="username"
-          label="Required"
-          defaultValue="Username"
-          variant="filled"
-        />
+      <main>
+        <Container maxwidth="sm">
+          <h1>
+            Sugar Chart
+          </h1>
+          <form noValidate autoComplete="off">
           <TextField
-            id="password"
-            label="Password"
-            type="password"
-            autoComplete="current-password"
+            required
+            id="username"
+            label="Required"
+            defaultValue="Username"
             variant="filled"
+            fullWidth
           />
-          <Button variant="contained" color="primary">Sign In</Button>
-        </form>
+            <TextField
+              id="password"
+              label="Password"
+              type="password"
+              autoComplete="current-password"
+              variant="filled"
+              margin="normal"
+              fullWidth
+            />
+            <Button variant="contained" color="primary">Sign In</Button>
+          </form>
+        </Container>
       </main>
     </div>
   )
