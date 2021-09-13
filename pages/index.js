@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Link from 'next/link';
+import {useRouter} from 'next/Router';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -19,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Home() {
 
   const classes = useStyles();
+  const router = useRouter();
 
   return (
     <div className={styles.container}>
@@ -57,7 +59,12 @@ export default function Home() {
               margin="normal"
               fullWidth
             />
-            <Button variant="contained" color="primary">Sign In</Button>
+            <Button variant="contained" color="primary" onClick={
+              (e)=>{
+                e.preventDefault();
+                router.push('menu');
+              }
+            }>Sign In</Button>
           </form>
         </Container>
       </main>
