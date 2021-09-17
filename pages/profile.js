@@ -2,7 +2,10 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/Router';
 
-export default function Home() {
+import HeaderBar from '../components/HeaderBar';
+import Profile from '../components/Profile';
+
+export default function ProfilePage() {
   const router = useRouter();
 
   return (
@@ -26,7 +29,8 @@ export default function Home() {
       </Head>
 
       <main>
-        <div>Profile</div>
+        <HeaderBar/>
+        <Profile/>
       </main>
     </div>
   );

@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import {useRouter} from 'next/Router';
 
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
@@ -21,6 +22,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Menu() {
   const classes = useStyles();
+  const router = useRouter();
 
   return (
     <div>
@@ -47,7 +49,9 @@ export default function Menu() {
           <HeaderBar />
           <Box sx={{display: 'flex', flexDirection: 'column'}}>
             <AvgSgrMeter avg={100}/>
-            <Button color='secondary'>Charts</Button>
+            <Button color='secondary' onClick={(e)=>{
+              router.push('/charts');
+            }}>Charts</Button>
             <Button color='secondary'>New Entry</Button>
           </Box>
         </Container>
