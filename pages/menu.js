@@ -1,28 +1,8 @@
 import Head from 'next/head';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/Router';
 
-import Container from '@material-ui/core/Container';
-import Button from '@material-ui/core/Button';
-import Box from '@mui/material/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import Menu from '../components/Menu';
 
-import HeaderBar from '../components/HeaderBar';
-import AvgSgrMeter from '../components/AvgSgrReadingMeter'
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: 200
-    }
-  }
-}));
-
-export default function Menu() {
-  const classes = useStyles();
-  const router = useRouter();
+export default function MenuPage() {
 
   return (
     <div>
@@ -33,30 +13,10 @@ export default function Menu() {
           name='viewport'
           content='minimum-scale=1, initial-scale=1, width=device-width'
         />
-        <link rel='icon' href='/favicon.ico' />
-        <link
-          rel='stylesheet'
-          href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap'
-        />
-        <link
-          rel='stylesheet'
-          href='https://fonts.googleapis.com/icon?family=Material+Icons'
-        />
       </Head>
 
       <main>
-        <Container maxwidth='sm'>
-          <HeaderBar />
-          <Box sx={{display: 'flex', flexDirection: 'column'}}>
-            <AvgSgrMeter avg={100}/>
-            <Button color='secondary' onClick={(e)=>{
-              router.push('/charts');
-            }}>Charts</Button>
-            <Button color='secondary' onClick={(e)=>{
-              router.push('/newentry');
-            }}>New Entry</Button>
-          </Box>
-        </Container>
+        <Menu/>
       </main>
     </div>
   );

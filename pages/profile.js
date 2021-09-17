@@ -1,12 +1,8 @@
 import Head from 'next/head';
-import Link from 'next/link';
-import { useRouter } from 'next/Router';
 
-import HeaderBar from '../components/HeaderBar';
 import Profile from '../components/Profile';
 
 export default function ProfilePage() {
-  const router = useRouter();
 
   return (
     <div>
@@ -29,7 +25,6 @@ export default function ProfilePage() {
       </Head>
 
       <main>
-        <HeaderBar/>
         <Profile/>
       </main>
     </div>

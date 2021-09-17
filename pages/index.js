@@ -1,24 +1,9 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import Container from '@material-ui/core/Container';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
-import Link from 'next/link';
-import { useRouter } from 'next/Router';
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: 200
-    }
-  }
-}));
+import LogIn from '../components/LogIn';
 
 export default function Home() {
-  const classes = useStyles();
-  const router = useRouter();
 
   return (
     <div>
@@ -29,7 +14,6 @@ export default function Home() {
           name='viewport'
           content='minimum-scale=1, initial-scale=1, width=device-width'
         />
-        <link rel='icon' href='/favicon.ico' />
         <link
           rel='stylesheet'
           href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap'
@@ -41,40 +25,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <Container maxwidth='sm'>
-          <h1>Sugar Chart</h1>
-          <form noValidate autoComplete='off'>
-            <TextField
-              required
-              id='username'
-              label='Required'
-              defaultValue='Username'
-              variant='filled'
-              color='secondary'
-              fullWidth
-            />
-            <TextField
-              id='password'
-              label='Password'
-              type='password'
-              autoComplete='current-password'
-              variant='filled'
-              margin='normal'
-              color='secondary'
-              fullWidth
-            />
-            <Button
-              variant='contained'
-              color='primary'
-              onClick={e => {
-                e.preventDefault();
-                router.push('menu');
-              }}
-            >
-              Sign In
-            </Button>
-          </form>
-        </Container>
+        <LogIn/>
       </main>
     </div>
   );
