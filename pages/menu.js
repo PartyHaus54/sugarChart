@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import {useRouter} from 'next/Router';
+import { useRouter } from 'next/Router';
 
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
@@ -52,7 +52,9 @@ export default function Menu() {
             <Button color='secondary' onClick={(e)=>{
               router.push('/charts');
             }}>Charts</Button>
-            <Button color='secondary'>New Entry</Button>
+            <Button color='secondary' onClick={(e)=>{
+              router.push('/newentry');
+            }}>New Entry</Button>
           </Box>
         </Container>
       </main>

@@ -1,8 +1,9 @@
 import Head from 'next/head';
-import Container from '@material-ui/core/Container';
 import Charts from '../components/Charts';
+import { useRouter } from 'next/Router';
 
 export default function ChartsPage () {
+  const router = useRouter();
   return (
     <Charts/>
   )
