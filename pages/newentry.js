@@ -1,9 +1,8 @@
 import Head from 'next/head';
-import Image from 'next/image';
 
-import LogIn from '../components/LogIn';
+import NewEntry from '../components/NewEntry';
 
-export default function Home() {
+export default function NewEntryPage() {
 
   return (
     <div>
@@ -14,6 +13,7 @@ export default function Home() {
           name='viewport'
           content='minimum-scale=1, initial-scale=1, width=device-width'
         />
+        <link rel='icon' href='/favicon.ico' />
         <link
           rel='stylesheet'
           href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap'
@@ -25,7 +25,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <LogIn/>
+        <NewEntry/>
       </main>
     </div>
   );
