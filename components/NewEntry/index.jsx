@@ -24,6 +24,15 @@ const NewEntry = () => {
           entry.glucose_level = document.getElementById('glucose_level').value;
           entry.observed_date = document.getElementById('observed_date').value;
           entry.observed_time = document.getElementById('observed_time').value;
+
+          // axios.post('/somePath', entry)
+          // .then((res)=>{
+          //   console.log(res);
+          //   alert('Entry Logged');
+          // }).catch(err=>{
+          //   console.log(err);
+          //   alert('Something went wrong');
+          // });
           //validate the fields
             //if form is filled out correctly
               //send the completed reading record to the db
