@@ -3,10 +3,10 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
-// import { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
 const LogIn = () => {
-  // const router = useRouter();
+  const router = useRouter();
 
   return (
     <Container maxwidth='sm'>
@@ -33,8 +33,7 @@ const LogIn = () => {
           variant='contained'
           onClick={e => {
             e.preventDefault();
-            // router.push('menu');
-            console.log('click');
+            router.push('menu');
           }}
         >
           Sign In

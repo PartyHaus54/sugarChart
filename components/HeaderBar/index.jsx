@@ -1,5 +1,5 @@
 import React from 'react';
-import {useRouter} from 'next/Router';
+import {useRouter} from 'next/router';
 import Box from '@mui/material/Box';
 
 const HeaderBar = props => {

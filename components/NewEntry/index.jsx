@@ -14,7 +14,20 @@ const NewEntry = () => {
         <p>Sugar Level</p>
         <p>Date</p>
         <p>Time</p>
-        <Button>Submit</Button>
+        <Button onClick={(e)=>{
+          e.preventDefault();
+          //validate the fields
+            //if form is filled out correctly
+              //send the completed reading record to the db
+                //upon successful completion
+                  //let the user know their reading was successfully updated
+                  //redirect them to the chart for the day
+                //if record was not logged
+                  //notify the user what went wrong
+            //if form is not complete
+              //notify user what field they need to fill out
+          alert('Thank you for submitting your sugar');
+        }}>Submit</Button>
       </Container>
     </React.Fragment>
   )

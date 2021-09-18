@@ -3,7 +3,7 @@ import React from 'react';
 import AvgSgrMeter from '../AvgSgrReadingMeter';
 import HeaderBar from '../HeaderBar';
 
-import {useRouter} from 'next/router';
+import { useRouter } from 'next/router'
 
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';

@@ -5,6 +5,8 @@ import { useRouter } from 'next/router';
 import HeaderBar from '../HeaderBar';
 
 const Profile = () => {
+  const router = useRouter();
+
   return (
     <div>
       <HeaderBar/>

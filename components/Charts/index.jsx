@@ -18,8 +18,12 @@ const Charts = (props) => {
       <HeaderBar/>
 
       <h1>{`${timeRange} Chart Here`}</h1>
-{/*
-      <Dropdown id="timeRange" label="Time Range" options={["day","week","month","3 months", "6 months", "year", "total"]} handleChange={changeHandler}/> */}
+
+      <Dropdown
+        id="timeRange"
+        label="Time Range"
+        options={["day","week","month","3 months", "6 months", "year", "total"]}
+        handleChange={changeHandler}/>
     </div>
 )}
 
