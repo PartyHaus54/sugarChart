@@ -7,6 +7,6 @@ describe('Home', () => {
   test('renders Home component', () => {
     render(<Home />);
 
-    expect(screen.getByRole('textbox')).toBeInTheDocument();
+    expect(screen.queryByText('hello')).toBeNull();
   });
 });
