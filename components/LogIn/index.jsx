@@ -4,7 +4,7 @@ import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 
-import logo from '../public/logo.png';
+// import logo from '../public/logo.png';
 
 import { useRouter } from 'next/router';
 
@@ -13,7 +13,7 @@ const LogIn = () => {
 
   return (
     <Container fixed>
-      <img src={logo}/>
+      {/* <img src={logo}/> */}
       <h1>Sugar Chart</h1>
       <form>
         <TextField
