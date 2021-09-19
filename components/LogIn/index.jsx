@@ -3,13 +3,17 @@ import React from 'react';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
+
+// import logo from '../public/logo.png';
+
 import { useRouter } from 'next/router';
 
 const LogIn = () => {
   const router = useRouter();
 
   return (
-    <Container maxwidth='sm'>
+    <Container fixed>
+      {/* <img src={logo}/> */}
       <h1>Sugar Chart</h1>
       <form>
         <TextField
@@ -38,6 +42,7 @@ const LogIn = () => {
         >
           Sign In
         </Button>
+        <p>🚧🚧This page is still under construction. No user name or password is required. Please select the Sign In button to enter🚧🚧</p>
       </form>
     </Container>
   )

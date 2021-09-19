@@ -22,7 +22,7 @@ const NewEntry = () => {
       <Modal title={modalTitle} description={modalDescription} open={open} toggleView={()=>{
         setOpen(!open);
       }}/>
-      <HeaderBar/>
+      <HeaderBar title='New Entry'/>
       <Container maxwidth="sm">
         <Box sx={{display: 'flex', flexDirection: 'column'}}>
           <h1>New Entry</h1>
