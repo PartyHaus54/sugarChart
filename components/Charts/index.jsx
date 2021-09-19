@@ -7,14 +7,14 @@ import Dropdown from '../FormComponents/Dropdown';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 
-import sampleData from './sampleData';
+// import sampleData from './sampleData';
 
 const Charts = (props) => {
   const [timeRange, setTimeRange] = useState('day');
   const [readingSet, setReadingSet] = useState('');
 
   //FOR DEV ONLY:
-  setReadingSet(sampleData);
+  // setReadingSet(sampleData);
 
   const changeHandler = (t) => {
     //TODO:
