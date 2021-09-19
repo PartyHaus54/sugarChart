@@ -1,6 +1,8 @@
 import React from 'react';
 import {useRouter} from 'next/router';
+
 import Box from '@mui/material/Box';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 const HeaderBar = props => {
   const router = useRouter();
@@ -9,9 +11,9 @@ const HeaderBar = props => {
       <div onClick={(e)=>{
         router.push('/menu');
       }}>Logo</div>
-      <div onClick={(e)=>{
+      <AccountCircleIcon onClick={(e)=>{
         router.push('/profile');
-      }}>Profile</div>
+      }}/>
     </Box>
   )
 };

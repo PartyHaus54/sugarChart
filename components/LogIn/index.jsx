@@ -38,6 +38,7 @@ const LogIn = () => {
         >
           Sign In
         </Button>
+        <p>🚧🚧This page is still under construction. No user name or password is required. Please select the Sign In button to enter🚧🚧</p>
       </form>
     </Container>
   )
