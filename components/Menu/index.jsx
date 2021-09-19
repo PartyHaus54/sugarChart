@@ -1,32 +1,31 @@
 import React from 'react';
 
-import AvgSgrMeter from '../AvgSgrReadingMeter';
-import HeaderBar from '../HeaderBar';
+import DashBoard from './DashBoard';
+import GraphicButton from './GraphicButton';
 
 import { useRouter } from 'next/router'
 
-import Container from '@material-ui/core/Container';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
-import Button from '@material-ui/core/Button';
 import Box from '@mui/material/Box';
 
 const Menu = () => {
   const router = useRouter();
   return (
-    <Container fixed>
-      <HeaderBar title='Main Menu'/>
-      <Box sx={{display: 'flex', flexDirection: 'column'}}>
-        <AvgSgrMeter avg={100}/>
+    <Box sx={{display: 'flex', flexDirection: 'column'}}>
+      <DashBoard dash={100}/>
 
-        <Button color='secondary' onClick={(e)=>{
+      <GraphicButton
+        content={<AssessmentIcon/>}
+        clickHandler={(e)=>{
           router.push('/charts');
-        }}><AssessmentIcon/></Button>
-        <Button color='secondary' onClick={(e)=>{
+      }}/>
+      <GraphicButton
+        content={<NoteAddIcon/>}
+        clickHandler={(e)=>{
           router.push('/newentry');
-        }}><NoteAddIcon/></Button>
-      </Box>
-    </Container>
+      }}/>
+    </Box>
   )
 }
 

@@ -1,4 +1,6 @@
 import Head from 'next/head';
+
+import PageTemplate from '../components/PageTemplate';
 import Charts from '../components/Charts';
 
 export default function ChartsPage () {
@@ -21,7 +23,7 @@ export default function ChartsPage () {
         />
     </Head>
     <main>
-      <Charts/>
+      <PageTemplate title='Charts' content={<Charts/>}/>
     </main>
     </div>
   )
