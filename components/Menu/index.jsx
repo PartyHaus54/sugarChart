@@ -14,8 +14,8 @@ import Box from '@mui/material/Box';
 const Menu = () => {
   const router = useRouter();
   return (
-    <Container maxwidth='sm'>
-      <HeaderBar />
+    <Container fixed>
+      <HeaderBar title='Main Menu'/>
       <Box sx={{display: 'flex', flexDirection: 'column'}}>
         <AvgSgrMeter avg={100}/>
 
