@@ -1,21 +1,46 @@
 import React from 'react';
 import {useRouter} from 'next/router';
 
-import Box from '@mui/material/Box';
+import styled from '@emotion/styled';
+
+import HomeIcon from '@mui/icons-material/Home';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
+const StyledBox = styled.div`
+  font-family: arial;
+  color: #22b49f;
+  background-color: #f3eece;
+  box-shadow: 0px 0px 5px #4040409e;
+  display: flex;
+  padding: 0 1rem;
+  justify-content: space-between;
+  align-content: center;
+  button{
+    background: none;
+    border: none;
+    :hover{
+      cursor: pointer;
+    }
+  }
+  svg {
+    color: #1e9c8a;
+    height: 2rem;
+    width: 2rem;
+  }
+`;
 
 const HeaderBar = ({title=''}) => {
   const router = useRouter();
   return(
-    <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
-      <div onClick={(e)=>{
+    <StyledBox>
+      <button onClick={(e)=>{
         router.push('/menu');
-      }}>Logo</div>
+      }}><HomeIcon/></button>
       <h2>{title}</h2>
-      <AccountCircleIcon onClick={(e)=>{
+      <button onClick={(e)=>{
         router.push('/profile');
-      }}/>
-    </Box>
+      }}><AccountCircleIcon /></button>
+    </StyledBox>
   )
 };
 
