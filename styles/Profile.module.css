@@ -6,7 +6,12 @@
 }
 
 .profileImage {
-  width: 10rem;
+  width: 7.5rem;
   height: 8rem;
   border-radius: 50%;
+}
+
+.accountIcon {
+  height: 8rem;
+  width: 8rem;
 }
