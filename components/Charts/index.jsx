@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import django from '../../utils/django.js';
 import axios from 'axios';
 
 import Dropdown from '../FormComponents/Dropdown';
@@ -128,13 +129,27 @@ const sampleData = [
   }
 ];
 const Charts = (props) => {
-  const [timeRange, setTimeRange] = useState('day');
+  const [timeRange, setTimeRange] = useState(1);
   const [readingSet, setReadingSet] = useState('');
+  const [token, setToken] = useState('');
 
   useEffect(() => {
-    //FOR DEV ONLY:
-    setReadingSet(sampleData);
-  })
+    var token = django.tokenLoader();
+    axios({
+      method: 'get',
+      url: `${django.url}/api/readings_since/${timeRange}/`,
+      headers: {
+        'Accept': '*/*',
+        "Authorization": `Token ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      console.log(response);
+      setToken(token);
+      setReadingSet(response.data);
+    })
+  }, []);
 
   const changeHandler = (t) => {
     //TODO:
@@ -151,8 +166,8 @@ const Charts = (props) => {
         id="timeRange"
         label="Time Range"
         options={["day","week","month","3 months", "6 months", "year", "total"]}
-        handleChange={changeHandler}/>
-
+        handleChange={changeHandler}
+      />
       <table>
         <tbody>
           {/* {readingSet.map((entry) => (
