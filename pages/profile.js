@@ -1,5 +1,6 @@
 import Head from 'next/head';
 
+import PageTemplate from '../components/PageTemplate';
 import Profile from '../components/Profile';
 
 export default function ProfilePage() {
@@ -25,7 +26,7 @@ export default function ProfilePage() {
       </Head>
 
       <main>
-        <Profile/>
+        <PageTemplate title="Profile" content={<Profile/>}/>
       </main>
     </div>
   );
