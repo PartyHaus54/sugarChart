@@ -3,6 +3,7 @@ import django from '../../utils/django.js';
 import axios from 'axios';
 
 import Dropdown from '../FormComponents/Dropdown';
+import Chart from './Chart';
 
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -151,23 +152,40 @@ const Charts = (props) => {
     })
   }, []);
 
-  const changeHandler = (t) => {
+  const changeHandler = (days) => {
     //TODO:
     //GET users readings for timeRange
     //display chart with users readings for timeRange
-    setTimeRange(t);
+    setTimeRange(days);
   }
 
   return (
     <div>
       <h1>{`${timeRange} Chart Here`}</h1>
-
+      <Chart data={timeRange}/>
       <Dropdown
         id="timeRange"
         label="Time Range"
-        options={["day","week","month","3 months", "6 months", "year", "total"]}
-        handleChange={changeHandler}
-      />
+        options={[
+          {text: 'day',
+          numOfDays: 1},
+          {text: 'week',
+          numOfDays: 7},
+          {text: 'month',
+          numOfDays: 30},
+          {text: '3 months',
+          numOfDays: 90},
+          {text: '6 months',
+          numOfDays: 180},
+          {text: 'year',
+          numOfDays: 365},
+          {text: 'total',
+          numOfDays: 0}
+        ]}
+        handleChange={(e) => {
+          changeHandler(e.target.value);
+        }}/>
+
       <table>
         <tbody>
           {/* {readingSet.map((entry) => (

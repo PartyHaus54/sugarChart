@@ -10,7 +10,7 @@ const Dropdown = ({id, label, options, handleChange}) => (
     <Select
       labelId={id}
       id={`${id}-select`}
-      value={options[0]}
+      placeholder={options[0].text}
       label={id}
       onChange={(e)=>{
         e.preventDefault();
@@ -18,8 +18,8 @@ const Dropdown = ({id, label, options, handleChange}) => (
       }}
     >
       {
-        options.map((option, i)=>(
-          <MenuItem key={i} value={option}>{option}</MenuItem>
+        options.map((option)=>(
+          <MenuItem key={option.numOfDays} value={option.numOfDays}>{option.text}</MenuItem>
         ))
       }
     </Select>

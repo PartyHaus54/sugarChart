@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 
+import PageTemplate from '../components/PageTemplate';
 import LogIn from '../components/LogIn';
 
 export default function Home() {
@@ -25,7 +26,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <LogIn/>
+        <PageTemplate header={false} content={<LogIn/>}/>
       </main>
     </div>
   );

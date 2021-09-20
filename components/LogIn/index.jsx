@@ -1,11 +1,42 @@
 import React, { useState } from 'react';
 import djangoUtil from '../../utils/django';
 
+import styled from '@emotion/styled';
+
+import Image from 'next/image';
+
+import logo from '../../public/logo.png';
+
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 
-// import logo from '../public/logo.png';
+const StyledDiv = styled.div`
+  font-family: arial;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+
+  max-width: 30rem;
+  margin: 0 auto;
+  h1{
+    color: #1e7373;
+    padding: 3rem 1rem 1rem 1rem;
+  }
+  div {
+    .logo {
+      filter: opacity(.25);
+    }
+  }
+  form{
+    button{
+      background-color: #f3eece;
+    }
+  }
+  p {
+    color: #475f5b;
+  }
+`;
 
 import { useRouter } from 'next/router';
 
@@ -17,14 +48,21 @@ const LogIn = () => {
   const [password, setPassword] = useState('');
 
   return (
-    <Container fixed>
+    <StyledDiv>
       {/* <img src={logo}/> */}
       <h1>Sugar Chart</h1>
+      <div>
+        <Image className='logo' src={logo} alt='butterfly logo'/>
+      </div>
       <form>
         <TextField
           required
           id='username'
+<<<<<<< HEAD
           label='Username'
+=======
+          label='username'
+>>>>>>> c88bd09f1ee7231b1aebc46554a151dd54199e83
           variant='filled'
           fullWidth
           onChange={(e) => {
@@ -34,7 +72,7 @@ const LogIn = () => {
         <TextField
           required
           id='password'
-          label='Password'
+          label='password'
           type='password'
           autoComplete='current-password'
           variant='filled'
@@ -71,7 +109,7 @@ const LogIn = () => {
         </Button>
         <p>🚧🚧This page is still under construction. No user name or password is required. Please select the Sign In button to enter🚧🚧</p>
       </form>
-    </Container>
+    </StyledDiv>
   )
 }
 

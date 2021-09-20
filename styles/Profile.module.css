@@ -1,0 +1,17 @@
+.profileContainer {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.profileImage {
+  width: 7.5rem;
+  height: 8rem;
+  border-radius: 50%;
+}
+
+.accountIcon {
+  height: 8rem !important;
+  width: 8rem !important;
+}
