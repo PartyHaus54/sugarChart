@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import djangoUtil from '../../utils/django';
 
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
@@ -8,8 +9,12 @@ import TextField from '@material-ui/core/TextField';
 
 import { useRouter } from 'next/router';
 
+import axios from 'axios';
+
 const LogIn = () => {
   const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
     <Container fixed>
@@ -19,12 +24,15 @@ const LogIn = () => {
         <TextField
           required
           id='username'
-          label='Required'
-          defaultValue='Username'
+          label='Username'
           variant='filled'
           fullWidth
+          onChange={(e) => {
+            setUsername(e.target.value);
+          }}
         />
         <TextField
+          required
           id='password'
           label='Password'
           type='password'
@@ -32,11 +40,30 @@ const LogIn = () => {
           variant='filled'
           margin='normal'
           fullWidth
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
         />
         <Button
           variant='contained'
           onClick={e => {
             e.preventDefault();
+            axios({
+              method: 'post',
+              url: `${django.url}/user/login/`,
+              headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json'
+              },
+              data: {
+                username: username,
+                password: password
+              }
+            })
+            .then(response => {
+              document.cookie = `djangoToken=${response.data.token}; SameSite=None; Secure`;
+              console.log(document.cookie);
+            });
             router.push('menu');
           }}
         >
