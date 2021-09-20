@@ -10,9 +10,9 @@ const StyledDiv = styled.div`
   min-height: 100vh;
 `;
 
-const PageTemplate = ({title, content}) => (
+const PageTemplate = ({title='', header=true, content}) => (
   <StyledDiv>
-    <HeaderBar title={title}/>
+    {header?<HeaderBar title={title}/>: null}
     <Container fixed>
       {content}
     </Container>
