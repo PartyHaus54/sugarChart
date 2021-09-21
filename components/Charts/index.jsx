@@ -131,7 +131,7 @@ const sampleData = [
 ];
 const Charts = (props) => {
   const [timeRange, setTimeRange] = useState(1);
-  const [readingSet, setReadingSet] = useState('');
+  const [readingSet, setReadingSet] = useState([]);
   const [token, setToken] = useState('');
 
   useEffect(() => {
@@ -146,10 +146,9 @@ const Charts = (props) => {
       }
     })
     .then(response => {
-      console.log(response);
       setToken(token);
       setReadingSet(response.data);
-    })
+    });
   }, []);
 
   const changeHandler = (days) => {
@@ -157,6 +156,18 @@ const Charts = (props) => {
     //GET users readings for timeRange
     //display chart with users readings for timeRange
     setTimeRange(days);
+    axios({
+      method: 'get',
+      url: `${django.url}/api/readings_since/${days}/`,
+      headers: {
+        'Accept': '*/*',
+        "Authorization": `Token ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      setReadingSet(response.data);
+    });
   }
 
   return (
@@ -182,8 +193,9 @@ const Charts = (props) => {
           {text: 'total',
           numOfDays: 0}
         ]}
-        handleChange={(e) => {
-          changeHandler(e.target.value);
+        handleChange={(days) => {
+          console.log('days', days);
+          changeHandler(days);
         }}/>
 
       <table>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import djangoUtil from '../../utils/django';
+import django from '../../utils/django';
 
 import styled from '@emotion/styled';
 
@@ -58,11 +58,7 @@ const LogIn = () => {
         <TextField
           required
           id='username'
-<<<<<<< HEAD
-          label='Username'
-=======
           label='username'
->>>>>>> c88bd09f1ee7231b1aebc46554a151dd54199e83
           variant='filled'
           fullWidth
           onChange={(e) => {
@@ -100,7 +96,6 @@ const LogIn = () => {
             })
             .then(response => {
               document.cookie = `djangoToken=${response.data.token}; SameSite=None; Secure`;
-              console.log(document.cookie);
             });
             router.push('menu');
           }}

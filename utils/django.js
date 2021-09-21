@@ -5,7 +5,6 @@ const django = {
       .split('; ')
       .find(row => row.startsWith('djangoToken='))
       .split('=')[1];
-    console.log('Django token:', djangoToken);
     return djangoToken;
   }
 }
