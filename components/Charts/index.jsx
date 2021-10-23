@@ -131,8 +131,8 @@ const sampleData = [
 ];
 
 const Charts = (props) => {
-  const [timeRange, setTimeRange] = useState(1);
-  const [readingSet, setReadingSet] = useState(sampleData);
+  const [timeRange, setTimeRange] = useState(90);
+  const [readings, setReadings] = useState([]);
   const [token, setToken] = useState('');
 
   useEffect(() => {
@@ -148,7 +148,7 @@ const Charts = (props) => {
     })
     .then(response => {
       setToken(token);
-      setReadingSet(response.data);
+      setReadings(response.data);
     });
   }, []);
 
@@ -167,14 +167,14 @@ const Charts = (props) => {
       }
     })
     .then(response => {
-      setReadingSet(response.data);
+      setReadings(response.data);
     });
   }
 
   return (
     <div>
-      <h1>{`${timeRange} Chart Here`}</h1>
-      <Chart data={timeRange}/>
+      <h1>{`${timeRange} Day Readings`}</h1>
+      <Chart timeRange={timeRange} readings={readings}/>
       <Dropdown
         id="timeRange"
         label="Time Range"
@@ -201,11 +201,11 @@ const Charts = (props) => {
 
       <table>
         <tbody>
-          {readingSet.map((entry) => (
-            <tr key={entry.id}>
-              <td className="date">{entry.observed_date}</td>
-              <td className="time">{entry.observed_time}</td>
-              <td className="reading">{entry.glucose_level}</td>
+          {readings.map((reading) => (
+            <tr key={reading.id}>
+              <td className="date">{reading.observed_date}</td>
+              <td className="time">{reading.observed_time}</td>
+              <td className="reading">{reading.glucose_level}</td>
             </tr>
           ))}
         </tbody>

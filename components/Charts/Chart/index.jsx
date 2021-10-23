@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from '@emotion/styled';
 
 const StyledDiv = styled.div`
@@ -8,19 +8,22 @@ const StyledDiv = styled.div`
 `;
 
 const StyledSVG = styled.svg`
-  background-color: black;
+  background-color: white;
 `
 
-const Chart = ({data}) => {
-  const [chartWidth, setChartWidth] = useState();
+const Chart = ({timeRange, readings}) => {
+  const [chartWidth, setChartWidth] = useState(0);
+  const [chartHeight, setChartHeight] = useState(0);
 
-  const findDivWidth = () => {
-
-  }
+  useEffect(() => {
+    var width = document.getElementById('chart-container').offsetWidth;
+    setChartWidth(width);
+  }, []);
 
   return (
-    <div>
-      <StyledSVG width="100%" height="100" viewBox="0 0 1000 1000" className="chart">
+    <div id="chart-container">
+      <StyledSVG width={chartWidth} height="100"
+        viewBox={`0 0 ${chartWidth} 1000`} className="chart">
       </StyledSVG>
     </div>
 )};
