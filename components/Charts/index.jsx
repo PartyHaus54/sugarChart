@@ -129,9 +129,10 @@ const sampleData = [
       "entered_time": "2021-09-17T18:04:46.172363Z"
   }
 ];
+
 const Charts = (props) => {
   const [timeRange, setTimeRange] = useState(1);
-  const [readingSet, setReadingSet] = useState([]);
+  const [readingSet, setReadingSet] = useState(sampleData);
   const [token, setToken] = useState('');
 
   useEffect(() => {
@@ -200,13 +201,13 @@ const Charts = (props) => {
 
       <table>
         <tbody>
-          {/* {readingSet.map((entry) => (
+          {readingSet.map((entry) => (
             <tr key={entry.id}>
               <td className="date">{entry.observed_date}</td>
               <td className="time">{entry.observed_time}</td>
               <td className="reading">{entry.glucose_level}</td>
             </tr>
-          ))} */}
+          ))}
         </tbody>
       </table>
     </div>
