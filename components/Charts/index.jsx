@@ -131,7 +131,7 @@ const sampleData = [
 ];
 
 const Charts = (props) => {
-  const [timeRange, setTimeRange] = useState(90);
+  const [timeRange, setTimeRange] = useState(7);
   const [readings, setReadings] = useState([]);
   const [token, setToken] = useState('');
 
