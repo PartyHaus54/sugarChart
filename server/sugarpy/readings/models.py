@@ -19,4 +19,4 @@ class Reading(models.Model):
   glucose_level = models.IntegerField(null=False)
 
   class Meta:
-    ordering = ['observed_time']
+    ordering = ['observed_date', 'observed_time']
