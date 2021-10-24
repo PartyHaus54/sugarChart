@@ -20,6 +20,7 @@ const Chart = ({timeRange, readings}) => {
   const [viewBottom, setViewBottom] = useState(lowestPoint - ((highestPoint - lowestPoint) / 10));
   const [viewLeft, setViewLeft] = useState(0);
   const [viewRight, setViewRight] = useState(timeRange);
+  const [displayPoints, setDisplayPoints] = useState([]);
 
   const viewTopMax = 500;
   const viewBottomMin = 0;
@@ -85,7 +86,28 @@ const Chart = ({timeRange, readings}) => {
     setChartWidth(width);
     // Versatile height later (MVP for now)
     setChartHeight(width);
-  }, []);
+    setCoordinates(readings, timeRange);
+  }, [readings]);
+
+  const setCoordinates = (readings, dayCount) => {
+    var start = Date.now() - (1000 * 60 * 60 * 24 * dayCount);
+    var end = Date.now() - start;
+    var divisor = end / 500;
+    var points = [];
+    readings.forEach(reading => {
+      // Get unix timestamp
+      var timestamp = new Date(`${reading.observed_date}T${reading.observed_time}`).getTime();
+      // Calibrate to viewbox
+      var timestamp = (timestamp - start) / divisor;
+      var coordinate = {
+        id: reading.id,
+        x: timestamp,
+        y: reading.glucose_level
+      }
+      points.push(coordinate);
+    });
+    setDisplayPoints(points);
+  }
 
   // In order to calibrate the points to the viewbox, we will need to know a scalable value for the left/right (start/end) times
   // Solid MVP first pass suggests that time start should be ~450, and the time end ~50
@@ -111,6 +133,11 @@ const Chart = ({timeRange, readings}) => {
         <rect id="prediabetes-range" x="0" y="375" width={500} height={25} fill="rgba(255,255,0,0.2)"/>
         <rect id="normalglycemia-range" x="0" y="400" width={500} height={30} fill="rgba(0,255,0,0.2)"/>
         <rect id="hypoglycemia-range" x="0" y="430" width={500} height={70} fill="rgba(255,0,0,.2)"/>
+        {
+          displayPoints.map(point => (
+            <circle key={point.id} cx={point.x} cy={500 - point.y} r="5"/>
+          ))
+        }
       </StyledSVG>
     </div>
 )};
