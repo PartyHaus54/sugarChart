@@ -16,6 +16,7 @@ const Chart = ({timeRange, readings}) => {
   const [chartHeight, setChartHeight] = useState(0);
   const [lowestPoint, setLowestPoint] = useState(70);
   const [highestPoint, setHighestPoint] = useState(99);
+  const [divisorY, setDivisorY] = useState(1);
   const [viewTop, setViewTop] = useState(((highestPoint - lowestPoint) / 10) + highestPoint);
   const [viewBottom, setViewBottom] = useState(lowestPoint - ((highestPoint - lowestPoint) / 10));
   const [viewLeft, setViewLeft] = useState(0);
@@ -108,7 +109,7 @@ const Chart = ({timeRange, readings}) => {
     });
     setLowestPoint(minReading);
     setHighestPoint(maxReading);
-    var divisorY = (maxReading - minReading) / 400;
+    setDivisorY((maxReading - minReading) / 400);
 
     // Difference is going to be (reading - minReading) / divisor
     // divisor = (maxReading - minReading) / 400
@@ -177,9 +178,9 @@ const Chart = ({timeRange, readings}) => {
     <div id="chart-container">
       <StyledSVG width={chartWidth} height={chartHeight} viewBox={`0 0 500 ${viewTopMax}`} className="chart">
         <rect id="diabetes-range" x="0" y="0" width={500} height={375} fill="rgba(255,0,0,.2)"/>
-        <rect id="prediabetes-range" x="0" y="375" width={500} height={25} fill="rgba(255,255,0,0.2)"/>
-        <rect id="normalglycemia-range" x="0" y="400" width={500} height={30} fill="rgba(0,255,0,0.2)"/>
-        <rect id="hypoglycemia-range" x="0" y="430" width={500} height={70} fill="rgba(255,0,0,.2)"/>
+        <rect id="prediabetes-range" x="0" y={375} width={500} height={25} fill="rgba(255,255,0,0.2)"/>
+        <rect id="normalglycemia-range" x="0" y={400} width={500} height={30} fill="rgba(0,255,0,0.2)"/>
+        <rect id="hypoglycemia-range" x="0" y={430} width={500} height={70} fill="rgba(255,0,0,.2)"/>
         {
           displayLines.map(line => (
             <line key={line.id} x1={line.x1} y1={500 - line.y1} x2={line.x2} y2={500 - line.y2} stroke="gray"/>
