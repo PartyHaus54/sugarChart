@@ -61,7 +61,7 @@ const Chart = ({timeRange, readings}) => {
       label: 'Diabetes',
       rangeMin: 126,
       rangeMax: 500,
-      color: 'rgba(255,0,0,.2)'
+      color: 'rgba(255,0,0,0.2)'
     },
     {
       label: 'Pre-Diabetes',
@@ -93,9 +93,9 @@ const Chart = ({timeRange, readings}) => {
     // height = tricky. width for now;
     // padding = width (or height) * paddingPercent;
 
-      // renderRangeX = width - (width * 2 * padding);
+      // timeRenderRangeX = width - (width * 2 * padding);
       // valueRangeX = maxReadingX - minReadingX;
-      // divisorX = valueRange / renderRange;
+      // divisorX = valueRange / timeRenderRange;
       // renderX = valuex / divisorX + padding
 
         // if the DOM will render something at 100 pixels wide, but the data range is 200 wide, divisorX = 2
@@ -118,22 +118,23 @@ const Chart = ({timeRange, readings}) => {
 
     // X-Axis Calibration Variables
     // There are 86,400,000 milliseaconds in a day
-    var timeZoneOffset = 7;
+    var timeZoneOffset = 0;
     var now = Date.now()// - (3600000 * timeZoneOffset);
-    console.log('Date.now()', now/1000);
+    //console.log('Date.now()', now/1000);
     var timeDataMin = now - (1000 * 60 * 60 * 24 * dayCount) - (3600000 * timeZoneOffset);
     var timeDataMax = now;
 
     var timeDataRange = timeDataMax - timeDataMin;
-    var renderRange = viewWidth - viewWidth * 2 * paddingPercent;
+    var timeRenderRange = viewWidth - viewWidth * 2 * paddingPercent;
+
     var displayRanges = [];
 
     // console.log('ViewWidth', viewWidth);
     // console.log('Padding%', paddingPercent);
     // console.log('padding', padding);
     // console.log('time range:', timeDataRange);
-    // console.log('Render Range:', renderRange);
-    var timeDataDivisor = timeDataRange / renderRange;
+    // console.log('Render Range:', timeRenderRange);
+    var timeDataDivisor = timeDataRange / timeRenderRange;
 
     const convertTimeDataForRender = (point, divisor) => {
       // Issue is suspected to be in time zone
@@ -148,20 +149,32 @@ const Chart = ({timeRange, readings}) => {
       return renderValue;
     }
 
-    const convertReadingLevelForRender = (point, divisor) => {
-      var renderValue = viewHeight - Math.floor(point / divisor) + padding;
-      console.log(renderValue);
-      return renderValue;
+    // Y-Axis Calibration Variables
+    const findReadingDataRange = () => {
+      readings.forEach(reading => {
+        if (reading.glucose_level < minReading) {
+          minReading = reading.glucose_level;
+        }
+        if (reading.glucose_level > maxReading) {
+          maxReading = reading.glucose_level;
+        }
+      });
+      return readingDataRange = maxReading - minReading;
     }
 
-    // Y-Axis Calibration Variables
-    var divisorY = 1;
+    var readingDataDivisor = 1;
     var points = [];
     var lines = [];
     // This is the min/max for the declared healthy range. Since that is hard coded, these are
     var healthyRange = glucoseLevelRanges[2];
+
     var minReading = healthyRange.rangeMin;
     var maxReading = healthyRange.rangeMax;
+
+    var readingDataRange = findReadingDataRange();
+    var readingRenderRange = viewHeight - viewHeight * 2 * paddingPercent
+
+    readingDataDivisor = readingDataRange / readingRenderRange;
 
     const setChartSize = () => {
       // This is modularized in a function because dynamically setting the chart height later could get messy
@@ -172,34 +185,27 @@ const Chart = ({timeRange, readings}) => {
       setChartHeight(width);
     }
 
-    const updateXScale = () => {
-
-    }
-
-    const updateYScale = () => {
-      readings.forEach(reading => {
-        if (reading.glucose_level < minReading) {
-          minReading = reading.glucose_level;
-        }
-        if (reading.glucose_level > maxReading) {
-          maxReading = reading.glucose_level;
-        }
-      });
-      divisorY = (maxReading - minReading) / 400;
-    }
-
     setChartSize();
-    updateYScale();
+    findReadingDataRange();
 
+    const convertReadingLevelForRender = (point, divisor) => {
+      var renderValue = viewHeight - (point / divisor) - padding;
+      console.log(renderValue);
+      return renderValue;
+    }
 
     glucoseLevelRanges.forEach((range, index) => {
-      var height = Math.floor((range.rangeMax - range.rangeMin) / divisorY);
-      var rangeMin = Math.floor((range.rangeMin / divisorY) - 50);
-      var rangeMax = Math.floor((range.rangeMax / divisorY) - 50);
+      // var renderheight = ((range.rangeMax) - (range.rangeMin)) / readingDataDivisor;
+      // console.log(`${range.label} has a min of ${range.rangeMin} and a max of ${range.rangeMax}`);
+      var glucoseRangeRenderMax = convertReadingLevelForRender(range.rangeMax + 0.5 - minReading, readingDataDivisor);
+      var glucoseRangeRenderMin = convertReadingLevelForRender(range.rangeMin - 0.5 - minReading, readingDataDivisor);
+      var renderHeight = glucoseRangeRenderMin - glucoseRangeRenderMax;
+      // var glucoseRangeMin = convertReadingLevelForRender(range.rangeMin - 0.5, readingDataDivisor);
+      // console.log(`This is being processed with render min of ${glucoseRangeMin} and a max of ${glucoseRangeMax}`);
       displayRanges.push({
         id: index,
-        yRender: Math.floor(500 - rangeMax),
-        height: height,
+        y: glucoseRangeRenderMax,
+        height: renderHeight,
         color: range.color
       });
     });
@@ -208,24 +214,29 @@ const Chart = ({timeRange, readings}) => {
       // Get unix timestamp
       var timestamp = new Date(`${reading.observed_date}T${reading.observed_time}`).getTime();
       // console.log('Time', new Date(`${reading.observed_date}T${reading.observed_time}`));
-      var difference = Date.now() - timestamp;
+      //var difference = Date.now() - timestamp;
       // ^^ The difference from now to timestamp is accurate ^^
       // Timestamp is accurate, so the issue must be with the timeDataMin
 
       // Problem is here
-      console.log('reading time - min:', timestamp - timeDataMin);
+      //console.log('reading time - min:', timestamp - timeDataMin);
       // why is the time minus timestamp value below the timeDataMin?
 
       var xRender = convertTimeDataForRender(timestamp - timeDataMin, timeDataDivisor);
+      var yRender = convertReadingLevelForRender(reading.glucose_level - minReading, readingDataDivisor);
+      // var yRender = ((reading.glucose_level - minReading) / readingDataDivisor) + 50;
 
       // Calibrate to viewbox
       //var timestamp = (timestamp - timeDataMin) / timeDataDivisor;
-      var yRender = ((reading.glucose_level - minReading) / divisorY) + 50;
+
+      // Points
       var coordinate = {
         id: reading.id,
         x: xRender,
         y: yRender
       };
+
+      // Lines
       if (points.length > 0) {
         var line = {
           id: index,
@@ -273,7 +284,7 @@ const Chart = ({timeRange, readings}) => {
       <StyledSVG width={chartWidth} height={chartHeight} viewBox={`0 0 ${viewWidth} ${viewHeight}`} className="chart">
         {
           displayRanges.map(range => (
-            <rect key={range.id} x="0" y={range.yRender} width={500} height={range.height} fill={range.color} />
+            <rect key={range.id} x="0" y={range.y} width={viewWidth} height={range.height} fill={range.color} />
           ))
         }
         {/* <rect id="diabetes-range" x="0" y="0" width={500} height={375} fill="rgba(255,0,0,.2)"/>
@@ -282,12 +293,12 @@ const Chart = ({timeRange, readings}) => {
         <rect id="hypoglycemia-range" x="0" y={430} width={500} height={70} fill="rgba(255,0,0,.2)"/> */}
         {
           displayLines.map(line => (
-            <line key={line.id} x1={line.x1} y1={500 - line.y1} x2={line.x2} y2={500 - line.y2} stroke="gray"/>
+            <line key={line.id} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2} stroke="gray"/>
           ))
         }
         {
           displayPoints.map(point => (
-            <circle key={point.id} cx={point.x} cy={500 - point.y} r="5"/>
+            <circle key={point.id} cx={point.x} cy={point.y} r="5"/>
           ))
         }
       </StyledSVG>

@@ -30,12 +30,10 @@ class ReadingListTimeSpan(generics.ListCreateAPIView):
   #queryset = Reading.objects.all()
   def get_queryset(self):
     now = datetime.now()
-    #now = now - timedelta(hours=7)
     print(now)
     days_ago = self.kwargs['days_ago']
     time_span = timedelta(days=days_ago)
-    timezone_offset = timedelta(hours=7)
-    span_start = now - time_span - timezone_offset
+    span_start = now - time_span
     print(span_start)
     if self.request.user.is_staff == True:
       return Reading.objects.filter(observed_date__gte=span_start)
@@ -52,8 +50,20 @@ class ReadingListTimeSpan(generics.ListCreateAPIView):
   @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
   def perform_create(self, serializer):
     serializer.save(user_id=self.request.user.id)
+    #serializer.save()
 
 
 class ReadingDetail(generics.RetrieveUpdateDestroyAPIView):
-  queryset = Reading.objects.all()
+  def get_queryset(self):
+    id = self.kwargs['pk']
+    if self.request.user.is_staff == True:
+      return Reading.objects.filter(id=id)
+    elif not self.request.user.is_anonymous:
+      user_id = self.request.user.id
+      return Reading.objects.filter(id=id, user_id=user_id)
+    else:
+      return
   serializer_class = ReadingSerializer
+  permissions_classes = (
+    IsAdminOrCurrentUser
+  )
