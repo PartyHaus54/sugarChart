@@ -14,18 +14,14 @@ const StyledSVG = styled.svg`
 const Chart = ({timeRange, readings}) => {
   const [chartWidth, setChartWidth] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
-  const [lowestPoint, setLowestPoint] = useState(70);
-  const [highestPoint, setHighestPoint] = useState(99);
-  const [divisorY, setDivisorY] = useState(1);
-  const [viewTop, setViewTop] = useState(((highestPoint - lowestPoint) / 10) + highestPoint);
-  const [viewBottom, setViewBottom] = useState(lowestPoint - ((highestPoint - lowestPoint) / 10));
-  const [viewLeft, setViewLeft] = useState(0);
-  const [viewRight, setViewRight] = useState(timeRange);
   const [displayPoints, setDisplayPoints] = useState([]);
   const [displayLines, setDisplayLines] = useState([]);
+  const [displayRanges, setDisplayRanges] = useState([]);
 
-  const viewTopMax = 500;
-  const viewBottomMin = 0;
+  var viewHeight = 500;
+  var viewWidth = 500;
+  const paddingPercent = 0.1;
+  var padding = viewWidth * paddingPercent;
 
   const colorRanges = {
     dangerouslyHigh: {
@@ -60,91 +56,189 @@ const Chart = ({timeRange, readings}) => {
     }
   }
 
-  const glucoseLevelRanges = {
-    diabetes: {
+  const glucoseLevelRanges = [
+    {
       label: 'Diabetes',
       rangeMin: 126,
-      rangeMax: null,
+      rangeMax: 500,
+      color: 'rgba(255,0,0,.2)'
     },
-    prediabetes: {
+    {
       label: 'Pre-Diabetes',
       rangeMin: 100,
       rangeMax: 125,
+      color: 'rgba(255,255,0,0.2)'
     },
-    normalGlycemia: {
+    {
       label: 'Normal-glycemia',
-      rangeMax: 70,
-      rangeMax: 99
+      rangeMin: 70,
+      rangeMax: 99,
+      color: 'rgba(0,255,0,0.2)'
     },
-    hypoglycemia: {
+    {
       label: 'Hypo-glycemia',
-      rangeMin: null,
-      rangeMax: 69
+      rangeMin: 0,
+      rangeMax: 69,
+      color: 'rgba(255,0,0,.2)'
     }
-  }
+  ];
 
   useEffect(() => {
-    var width = document.getElementById('chart-container').offsetWidth;
-    setChartWidth(width);
-    // Versatile height later (MVP for now)
-    setChartHeight(width);
-    setCoordinates(readings, timeRange);
+    updateRenderData(readings, timeRange);
   }, [readings]);
 
-  const setCoordinates = (readings, dayCount) => {
-    var start = Date.now() - (1000 * 60 * 60 * 24 * dayCount);
-    var end = Date.now() - start;
-    var divisorX = end / 500;
+  const updateRenderData = (readings, dayCount) => {
+    // All points should be able to have their x and y coordinates set by:
+    // width = var width = document.getElementById('chart-container').offsetWidth;
+    // height = tricky. width for now;
+    // padding = width (or height) * paddingPercent;
+
+      // renderRangeX = width - (width * 2 * padding);
+      // valueRangeX = maxReadingX - minReadingX;
+      // divisorX = valueRange / renderRange;
+      // renderX = valuex / divisorX + padding
+
+        // if the DOM will render something at 100 pixels wide, but the data range is 200 wide, divisorX = 2
+        // All points can then be divided by 2 to get where they will render, plus the padding
+        // Add to the above example a padding of 10 for total render width of 120
+            // Data Value = 100 (mid point of value range). Divide it by divisor of 2:
+            // Position with in render Range = 50. Add the padding of 10
+            // Final render position = 60
+              // 60 is halfway in between the low render of 10, and the high render of 110
+              // Formula works
+    // Except that the SVG vertical scale moves downards, so we need to subtract that value when dealing with the vertical
+
+    // The logic for the ranges do not have shared borders (diabetes.min !== preDiabetes.max)
+    // Because of this, we need the display to be between
+    // the rectangle button should be min -0.5 and the rectangle top should be max + 0.5
+    // Both of these points should be converted to render coordinates using the above, and the rectange height attr should be set to the post conversion difference
+    // Padding for color ranges is not in play until client requests it
+
+    // Reversed Y-Axis encourages 2 functions, (if check could also work but I'm not going to)
+
+    // X-Axis Calibration Variables
+    // There are 86,400,000 milliseaconds in a day
+    var timeZoneOffset = 7;
+    var now = Date.now()// - (3600000 * timeZoneOffset);
+    console.log('Date.now()', now/1000);
+    var timeDataMin = now - (1000 * 60 * 60 * 24 * dayCount) - (3600000 * timeZoneOffset);
+    var timeDataMax = now;
+
+    var timeDataRange = timeDataMax - timeDataMin;
+    var renderRange = viewWidth - viewWidth * 2 * paddingPercent;
+    var displayRanges = [];
+
+    // console.log('ViewWidth', viewWidth);
+    // console.log('Padding%', paddingPercent);
+    // console.log('padding', padding);
+    // console.log('time range:', timeDataRange);
+    // console.log('Render Range:', renderRange);
+    var timeDataDivisor = timeDataRange / renderRange;
+
+    const convertTimeDataForRender = (point, divisor) => {
+      // Issue is suspected to be in time zone
+      // The Now - timespan and the reading just need to be in the same timezone
+      // Handled elsewhere
+      // Django string is being stored as PDT
+
+      // With hard coded point, and the current divisor/padding calculations, it works
+      // The issue is that the point being passed into this function is not accurate
+      var renderValue = (point / divisor) + padding;
+      // console.log('render value', renderValue);
+      return renderValue;
+    }
+
+    const convertReadingLevelForRender = (point, divisor) => {
+      var renderValue = viewHeight - Math.floor(point / divisor) + padding;
+      console.log(renderValue);
+      return renderValue;
+    }
+
+    // Y-Axis Calibration Variables
+    var divisorY = 1;
     var points = [];
     var lines = [];
-    var minReading = 70;
-    var maxReading = 100;
-    readings.forEach(reading => {
-      if (reading.glucose_level < minReading) {
-        minReading = reading.glucose_level;
-      }
-      if (reading.glucose_level > maxReading) {
-        maxReading = reading.glucose_level;
-      }
+    // This is the min/max for the declared healthy range. Since that is hard coded, these are
+    var healthyRange = glucoseLevelRanges[2];
+    var minReading = healthyRange.rangeMin;
+    var maxReading = healthyRange.rangeMax;
+
+    const setChartSize = () => {
+      // This is modularized in a function because dynamically setting the chart height later could get messy
+      var width = document.getElementById('chart-container').offsetWidth;
+      var height = width;
+      setChartWidth(width);
+      // Versatile height later (MVP for now)
+      setChartHeight(width);
+    }
+
+    const updateXScale = () => {
+
+    }
+
+    const updateYScale = () => {
+      readings.forEach(reading => {
+        if (reading.glucose_level < minReading) {
+          minReading = reading.glucose_level;
+        }
+        if (reading.glucose_level > maxReading) {
+          maxReading = reading.glucose_level;
+        }
+      });
+      divisorY = (maxReading - minReading) / 400;
+    }
+
+    setChartSize();
+    updateYScale();
+
+
+    glucoseLevelRanges.forEach((range, index) => {
+      var height = Math.floor((range.rangeMax - range.rangeMin) / divisorY);
+      var rangeMin = Math.floor((range.rangeMin / divisorY) - 50);
+      var rangeMax = Math.floor((range.rangeMax / divisorY) - 50);
+      displayRanges.push({
+        id: index,
+        yRender: Math.floor(500 - rangeMax),
+        height: height,
+        color: range.color
+      });
     });
-    setLowestPoint(minReading);
-    setHighestPoint(maxReading);
-    setDivisorY((maxReading - minReading) / 400);
-
-    // Difference is going to be (reading - minReading) / divisor
-    // divisor = (maxReading - minReading) / 400
-
-    // Constraints:
-      // minReading === 50
-        // This can just be hard coded
-      // maxReading === 450
-        // max reading / divisorY = 400
-        // divisorY = maxReading / 400
-        // maxReading = (maxReading - minReading) / 400 + 50;
 
     readings.forEach((reading, index) => {
       // Get unix timestamp
       var timestamp = new Date(`${reading.observed_date}T${reading.observed_time}`).getTime();
+      // console.log('Time', new Date(`${reading.observed_date}T${reading.observed_time}`));
+      var difference = Date.now() - timestamp;
+      // ^^ The difference from now to timestamp is accurate ^^
+      // Timestamp is accurate, so the issue must be with the timeDataMin
+
+      // Problem is here
+      console.log('reading time - min:', timestamp - timeDataMin);
+      // why is the time minus timestamp value below the timeDataMin?
+
+      var xRender = convertTimeDataForRender(timestamp - timeDataMin, timeDataDivisor);
+
       // Calibrate to viewbox
-      var timestamp = (timestamp - start) / divisorX;
+      //var timestamp = (timestamp - timeDataMin) / timeDataDivisor;
       var yRender = ((reading.glucose_level - minReading) / divisorY) + 50;
       var coordinate = {
         id: reading.id,
-        x: timestamp,
-        y: reading.glucose_level
-      }
+        x: xRender,
+        y: yRender
+      };
       if (points.length > 0) {
         var line = {
           id: index,
           x1: points[index - 1].x,
           y1: points[index - 1].y,
-          x2: timestamp,
-          y2: reading.glucose_level
+          x2: xRender,
+          y2: yRender
         }
         lines.push(line);
       }
       points.push(coordinate);
     });
+    setDisplayRanges(displayRanges);
     setDisplayPoints(points);
     setDisplayLines(lines);
   }
@@ -176,11 +270,16 @@ const Chart = ({timeRange, readings}) => {
 
   return (
     <div id="chart-container">
-      <StyledSVG width={chartWidth} height={chartHeight} viewBox={`0 0 500 ${viewTopMax}`} className="chart">
-        <rect id="diabetes-range" x="0" y="0" width={500} height={375} fill="rgba(255,0,0,.2)"/>
+      <StyledSVG width={chartWidth} height={chartHeight} viewBox={`0 0 ${viewWidth} ${viewHeight}`} className="chart">
+        {
+          displayRanges.map(range => (
+            <rect key={range.id} x="0" y={range.yRender} width={500} height={range.height} fill={range.color} />
+          ))
+        }
+        {/* <rect id="diabetes-range" x="0" y="0" width={500} height={375} fill="rgba(255,0,0,.2)"/>
         <rect id="prediabetes-range" x="0" y={375} width={500} height={25} fill="rgba(255,255,0,0.2)"/>
         <rect id="normalglycemia-range" x="0" y={400} width={500} height={30} fill="rgba(0,255,0,0.2)"/>
-        <rect id="hypoglycemia-range" x="0" y={430} width={500} height={70} fill="rgba(255,0,0,.2)"/>
+        <rect id="hypoglycemia-range" x="0" y={430} width={500} height={70} fill="rgba(255,0,0,.2)"/> */}
         {
           displayLines.map(line => (
             <line key={line.id} x1={line.x1} y1={500 - line.y1} x2={line.x2} y2={500 - line.y2} stroke="gray"/>

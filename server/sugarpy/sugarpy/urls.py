@@ -45,6 +45,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     #path('api/login/', login),
     path('api/readings/', ReadingList.as_view()),
-    #path('api/readings/<int:pk>/', ReadingDetail.as_view())
+    path('api/readings/<int:pk>/', ReadingDetail.as_view()),
     path('api/readings_since/<int:days_ago>/', ReadingListTimeSpan.as_view())
 ]

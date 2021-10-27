@@ -30,9 +30,13 @@ class ReadingListTimeSpan(generics.ListCreateAPIView):
   #queryset = Reading.objects.all()
   def get_queryset(self):
     now = datetime.now()
+    #now = now - timedelta(hours=7)
+    print(now)
     days_ago = self.kwargs['days_ago']
     time_span = timedelta(days=days_ago)
-    span_start = now - time_span
+    timezone_offset = timedelta(hours=7)
+    span_start = now - time_span - timezone_offset
+    print(span_start)
     if self.request.user.is_staff == True:
       return Reading.objects.filter(observed_date__gte=span_start)
     elif not self.request.user.is_anonymous:
