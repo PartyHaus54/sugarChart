@@ -88,6 +88,7 @@ const Chart = ({timeRange, readings}) => {
   }, [readings]);
 
   const updateRenderData = (readings, dayCount) => {
+    var displayRanges = [];
     // All points should be able to have their x and y coordinates set by:
     // width = var width = document.getElementById('chart-container').offsetWidth;
     // height = tricky. width for now;
@@ -106,34 +107,21 @@ const Chart = ({timeRange, readings}) => {
             // Final render position = 60
               // 60 is halfway in between the low render of 10, and the high render of 110
               // Formula works
-    // Except that the SVG vertical scale moves downards, so we need to subtract that value when dealing with the vertical
+    // Except that the SVG vertical scale moves downards, so we need to reverse that logic slightly when dealing with the vertical
 
-    // The logic for the ranges do not have shared borders (diabetes.min !== preDiabetes.max)
-    // Because of this, we need the display to be between
-    // the rectangle button should be min -0.5 and the rectangle top should be max + 0.5
-    // Both of these points should be converted to render coordinates using the above, and the rectange height attr should be set to the post conversion difference
-    // Padding for color ranges is not in play until client requests it
-
-    // Reversed Y-Axis encourages 2 functions, (if check could also work but I'm not going to)
-
-    // X-Axis Calibration Variables
-    // There are 86,400,000 milliseaconds in a day
     var timeZoneOffset = 0;
-    var now = Date.now()// - (3600000 * timeZoneOffset);
-    //console.log('Date.now()', now/1000);
-    var timeDataMin = now - (1000 * 60 * 60 * 24 * dayCount) - (3600000 * timeZoneOffset);
+    // Inspiring client and devs are not UTC, but Django will be storing all users as UTC for simplicity
+    // Because of this, the x-axis is calibrated correctly according to the timespan, but the query will be miscmatched (7 hours into future)
+    // We'll need to implement mechanism for converting the user's UI time to the server's UTC
+      // Plan is to add time zone to user setting
+    var now = Date.now();
+    // There are 86,400,000 milliseaconds in a day
+    var timeDataMin = now - (86400000 * dayCount) - (3600000 * timeZoneOffset);
     var timeDataMax = now;
 
     var timeDataRange = timeDataMax - timeDataMin;
     var timeRenderRange = viewWidth - viewWidth * 2 * paddingPercent;
 
-    var displayRanges = [];
-
-    // console.log('ViewWidth', viewWidth);
-    // console.log('Padding%', paddingPercent);
-    // console.log('padding', padding);
-    // console.log('time range:', timeDataRange);
-    // console.log('Render Range:', timeRenderRange);
     var timeDataDivisor = timeDataRange / timeRenderRange;
 
     const convertTimeDataForRender = (point, divisor) => {
@@ -149,7 +137,11 @@ const Chart = ({timeRange, readings}) => {
       return renderValue;
     }
 
-    // Y-Axis Calibration Variables
+    // The logic for the ranges do not have shared borders (diabetes.min !== preDiabetes.max)
+    // Because of this, we need the display to be between
+    // the rectangle button should be min -0.5 and the rectangle top should be max + 0.5
+    // Both of these points should be converted to render coordinates using the above, and the rectange height attr should be set to the post conversion difference
+    // Padding for color ranges is not in play until client requests it
     const findReadingDataRange = () => {
       readings.forEach(reading => {
         if (reading.glucose_level < minReading) {
@@ -165,9 +157,8 @@ const Chart = ({timeRange, readings}) => {
     var readingDataDivisor = 1;
     var points = [];
     var lines = [];
-    // This is the min/max for the declared healthy range. Since that is hard coded, these are
-    var healthyRange = glucoseLevelRanges[2];
 
+    var healthyRange = glucoseLevelRanges[2];
     var minReading = healthyRange.rangeMin;
     var maxReading = healthyRange.rangeMax;
 
@@ -195,13 +186,9 @@ const Chart = ({timeRange, readings}) => {
     }
 
     glucoseLevelRanges.forEach((range, index) => {
-      // var renderheight = ((range.rangeMax) - (range.rangeMin)) / readingDataDivisor;
-      // console.log(`${range.label} has a min of ${range.rangeMin} and a max of ${range.rangeMax}`);
       var glucoseRangeRenderMax = convertReadingLevelForRender(range.rangeMax + 0.5 - minReading, readingDataDivisor);
       var glucoseRangeRenderMin = convertReadingLevelForRender(range.rangeMin - 0.5 - minReading, readingDataDivisor);
       var renderHeight = glucoseRangeRenderMin - glucoseRangeRenderMax;
-      // var glucoseRangeMin = convertReadingLevelForRender(range.rangeMin - 0.5, readingDataDivisor);
-      // console.log(`This is being processed with render min of ${glucoseRangeMin} and a max of ${glucoseRangeMax}`);
       displayRanges.push({
         id: index,
         y: glucoseRangeRenderMax,
@@ -213,21 +200,9 @@ const Chart = ({timeRange, readings}) => {
     readings.forEach((reading, index) => {
       // Get unix timestamp
       var timestamp = new Date(`${reading.observed_date}T${reading.observed_time}`).getTime();
-      // console.log('Time', new Date(`${reading.observed_date}T${reading.observed_time}`));
-      //var difference = Date.now() - timestamp;
-      // ^^ The difference from now to timestamp is accurate ^^
-      // Timestamp is accurate, so the issue must be with the timeDataMin
-
-      // Problem is here
-      //console.log('reading time - min:', timestamp - timeDataMin);
-      // why is the time minus timestamp value below the timeDataMin?
 
       var xRender = convertTimeDataForRender(timestamp - timeDataMin, timeDataDivisor);
       var yRender = convertReadingLevelForRender(reading.glucose_level - minReading, readingDataDivisor);
-      // var yRender = ((reading.glucose_level - minReading) / readingDataDivisor) + 50;
-
-      // Calibrate to viewbox
-      //var timestamp = (timestamp - timeDataMin) / timeDataDivisor;
 
       // Points
       var coordinate = {
@@ -254,31 +229,6 @@ const Chart = ({timeRange, readings}) => {
     setDisplayLines(lines);
   }
 
-  // In order to calibrate the points to the viewbox, we will need to know a scalable value for the left/right (start/end) times
-  // Solid MVP first pass suggests that time start should be ~450, and the time end ~50
-  // Readings will need to be a scalable timestamp as well
-
-  // All points most likely best handled by program with epoch/unix time
-  // The app can pull the current timestamp independently:
-    // x = Date.now();
-
-  // The readings can be done with:
-    // x = new Date(`${reading.observed_date}T${reading.observed_time}`).getTime();
-
-  // Readings can be calibrated by subtracting all timestamps by that of the timespan start
-  // We should convert milliseconds to minutes using:
-    // x = x / 60000;
-
-  // With everything now "left-grounded", we can simply divide all values by the value that takes the "now" timestamp to the desired right border (500 during init dev)
-
-
-  // For the vertical access, also developing off of a 500point scale, we are addding a 10% (50px) buffer to each side
-  // This means that we can find the min/max of each reading, calibrate it to a 400pt span, and add 50 to all readings
-  // If the lowest number is higher than the lower range of the healthy range, threshold becomes min, and vice versa
-  // It may be best to have the min/max given to use by the database so we only have to iterate through the readings once while setting the points
-  // The trick with the vertical axis is that standard cartesian graphs rises in value up, but SVG coordinates go down
-  // The math would be easier to
-
   return (
     <div id="chart-container">
       <StyledSVG width={chartWidth} height={chartHeight} viewBox={`0 0 ${viewWidth} ${viewHeight}`} className="chart">
@@ -287,10 +237,6 @@ const Chart = ({timeRange, readings}) => {
             <rect key={range.id} x="0" y={range.y} width={viewWidth} height={range.height} fill={range.color} />
           ))
         }
-        {/* <rect id="diabetes-range" x="0" y="0" width={500} height={375} fill="rgba(255,0,0,.2)"/>
-        <rect id="prediabetes-range" x="0" y={375} width={500} height={25} fill="rgba(255,255,0,0.2)"/>
-        <rect id="normalglycemia-range" x="0" y={400} width={500} height={30} fill="rgba(0,255,0,0.2)"/>
-        <rect id="hypoglycemia-range" x="0" y={430} width={500} height={70} fill="rgba(255,0,0,.2)"/> */}
         {
           displayLines.map(line => (
             <line key={line.id} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2} stroke="gray"/>
