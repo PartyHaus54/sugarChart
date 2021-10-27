@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import django from '../../utils/django';
 
 import styled from '@emotion/styled';
 
@@ -39,8 +40,12 @@ const StyledDiv = styled.div`
 
 import { useRouter } from 'next/router';
 
+import axios from 'axios';
+
 const LogIn = () => {
   const router = useRouter();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   return (
     <StyledDiv>
@@ -56,8 +61,12 @@ const LogIn = () => {
           label='username'
           variant='filled'
           fullWidth
+          onChange={(e) => {
+            setUsername(e.target.value);
+          }}
         />
         <TextField
+          required
           id='password'
           label='password'
           type='password'
@@ -65,11 +74,29 @@ const LogIn = () => {
           variant='filled'
           margin='normal'
           fullWidth
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
         />
         <Button
           variant='contained'
           onClick={e => {
             e.preventDefault();
+            axios({
+              method: 'post',
+              url: `${django.url}/user/login/`,
+              headers: {
+                'Accept': '*/*',
+                'Content-Type': 'application/json'
+              },
+              data: {
+                username: username,
+                password: password
+              }
+            })
+            .then(response => {
+              document.cookie = `djangoToken=${response.data.token}; SameSite=None; Secure`;
+            });
             router.push('menu');
           }}
         >

@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import django from '../../utils/django.js';
 import axios from 'axios';
 
 import Dropdown from '../FormComponents/Dropdown';
@@ -128,26 +129,52 @@ const sampleData = [
       "entered_time": "2021-09-17T18:04:46.172363Z"
   }
 ];
+
 const Charts = (props) => {
-  const [timeRange, setTimeRange] = useState(1);
-  const [readingSet, setReadingSet] = useState('');
+  const [timeRange, setTimeRange] = useState(7);
+  const [readings, setReadings] = useState([]);
+  const [token, setToken] = useState('');
 
   useEffect(() => {
-    //FOR DEV ONLY:
-    setReadingSet(sampleData);
-  })
+    var token = django.tokenLoader();
+    axios({
+      method: 'get',
+      url: `${django.url}/api/readings_since/${timeRange}/`,
+      headers: {
+        'Accept': '*/*',
+        "Authorization": `Token ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      setToken(token);
+      setReadings(response.data);
+    });
+  }, []);
 
-  const changeHandler = (t) => {
+  const changeHandler = (days) => {
     //TODO:
     //GET users readings for timeRange
     //display chart with users readings for timeRange
-    setTimeRange(t);
+    setTimeRange(days);
+    axios({
+      method: 'get',
+      url: `${django.url}/api/readings_since/${days}/`,
+      headers: {
+        'Accept': '*/*',
+        "Authorization": `Token ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      setReadings(response.data);
+    });
   }
 
   return (
     <div>
-      <h1>{`${timeRange} Chart Here`}</h1>
-      <Chart data={timeRange}/>
+      <h1>{`${timeRange} Day Readings`}</h1>
+      <Chart timeRange={timeRange} readings={readings}/>
       <Dropdown
         id="timeRange"
         label="Time Range"
@@ -167,17 +194,20 @@ const Charts = (props) => {
           {text: 'total',
           numOfDays: 0}
         ]}
-        handleChange={changeHandler}/>
+        handleChange={(days) => {
+          console.log('days', days);
+          changeHandler(days);
+        }}/>
 
       <table>
         <tbody>
-          {/* {readingSet.map((entry) => (
-            <tr key={entry.id}>
-              <td className="date">{entry.observed_date}</td>
-              <td className="time">{entry.observed_time}</td>
-              <td className="reading">{entry.glucose_level}</td>
+          {readings.map((reading) => (
+            <tr key={reading.id}>
+              <td className="date">{reading.observed_date}</td>
+              <td className="time">{reading.observed_time}</td>
+              <td className="reading">{reading.glucose_level}</td>
             </tr>
-          ))} */}
+          ))}
         </tbody>
       </table>
     </div>
