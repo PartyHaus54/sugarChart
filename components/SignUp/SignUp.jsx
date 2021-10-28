@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
+import django from '../../utils/django';
 import styled from '@emotion/styled';
 
+import axios from 'axios';
 
 import { useRouter } from 'next/router';
 
@@ -14,9 +16,9 @@ const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [age, setAge] = useState(18);
-  const [weight, setWeight] = useState(150);
-  const [timezone, setTimeZone] = useState('-7');
+  const [age, setAge] = useState(null);
+  const [weight, setWeight] = useState(null);
+  const [timezone, setTimeZone] = useState(null);
 
   const router = useRouter();
   return (
@@ -84,7 +86,60 @@ const SignUp = () => {
         variant='contained'
         onClick={e => {
           e.preventDefault();
+          axios({
+            method: 'post',
+            url: `${django.url}/register/`,
+            headers: {
+              'Accept': '*/*',
+              'Content-Type': 'application/json'
+            },
+            data: {
+              username: username,
+              password: password
+            }
+          })
+          .then(registerUserResponse => {
+          axios({
+            method: 'post',
+            url: `${django.url}/user/login/`,
+            headers: {
+              'Accept': '*/*',
+              'Content-Type': 'application/json'
+            },
+            data: {
+              username: username,
+              password: password
+            }
+          })
+            .then(loginResponse => {
+              document.cookie = `djangoToken=${loginResponse.data.token}; SameSite=None; Secure`;
+              axios({
+                method: 'post',
+                url: `${django.url}/api/user_details/`,
+                headers: {
+                  'Accept': '*/*',
+                  'Authorization': `Token ${loginResponse.data.token}`,
+                  'Content-Type': 'application/json'
+                },
+                data: {
+                  age: age,
+                  weight: weight,
+                  timezone: timezone
+                }
+              });
+            });
+          });
+
           router.push('/');
+        }}
+      >
+        Register
+      </Button>
+      <Button
+        variant='contained'
+        onClick={e => {
+          e.preventDefault();
+          router.push('menu');
         }}
       >
         Cancel
