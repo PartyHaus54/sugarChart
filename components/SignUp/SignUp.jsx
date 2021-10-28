@@ -20,6 +20,56 @@ const SignUp = () => {
   const [weight, setWeight] = useState(null);
   const [timezone, setTimeZone] = useState(null);
 
+  const handleRegistrationClick = (e) => {
+    e.preventDefault();
+    if (password.length > 4 && password === passwordConfirmation) {
+      axios({
+        method: 'post',
+        url: `${django.url}/register/`,
+        headers: {
+          'Accept': '*/*',
+          'Content-Type': 'application/json'
+        },
+        data: {
+          username: username,
+          password: password
+        }
+      })
+      .then(registerUserResponse => {
+        axios({
+          method: 'post',
+          url: `${django.url}/user/login/`,
+          headers: {
+            'Accept': '*/*',
+            'Content-Type': 'application/json'
+          },
+          data: {
+            username: username,
+            password: password
+          }
+        })
+          .then(loginResponse => {
+            document.cookie = `djangoToken=${loginResponse.data.token}; SameSite=None; Secure`;
+            axios({
+              method: 'post',
+              url: `${django.url}/api/user_details/`,
+              headers: {
+                'Accept': '*/*',
+                'Authorization': `Token ${loginResponse.data.token}`,
+                'Content-Type': 'application/json'
+              },
+              data: {
+                age: age,
+                weight: weight,
+                timezone: timezone
+              }
+            });
+          });
+      });
+      router.push('/');
+    }
+  };
+
   const router = useRouter();
   return (
     <StyledSignUpDiv>
@@ -37,6 +87,7 @@ const SignUp = () => {
         required
         id='password'
         label='Password'
+        type='password'
         variant='filled'
         fullWidth
         onChange={(e) => {
@@ -47,6 +98,7 @@ const SignUp = () => {
         required
         id='confirm-password'
         label='Confirm Password'
+        type='password'
         variant='filled'
         fullWidth
         onChange={(e) => {
@@ -84,54 +136,7 @@ const SignUp = () => {
       />
       <Button
         variant='contained'
-        onClick={e => {
-          e.preventDefault();
-          axios({
-            method: 'post',
-            url: `${django.url}/register/`,
-            headers: {
-              'Accept': '*/*',
-              'Content-Type': 'application/json'
-            },
-            data: {
-              username: username,
-              password: password
-            }
-          })
-          .then(registerUserResponse => {
-          axios({
-            method: 'post',
-            url: `${django.url}/user/login/`,
-            headers: {
-              'Accept': '*/*',
-              'Content-Type': 'application/json'
-            },
-            data: {
-              username: username,
-              password: password
-            }
-          })
-            .then(loginResponse => {
-              document.cookie = `djangoToken=${loginResponse.data.token}; SameSite=None; Secure`;
-              axios({
-                method: 'post',
-                url: `${django.url}/api/user_details/`,
-                headers: {
-                  'Accept': '*/*',
-                  'Authorization': `Token ${loginResponse.data.token}`,
-                  'Content-Type': 'application/json'
-                },
-                data: {
-                  age: age,
-                  weight: weight,
-                  timezone: timezone
-                }
-              });
-            });
-          });
-
-          router.push('/');
-        }}
+        onClick={(e) => { handleRegistrationClick(e) }}
       >
         Register
       </Button>
