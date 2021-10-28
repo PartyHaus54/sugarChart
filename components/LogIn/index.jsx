@@ -110,21 +110,6 @@ const LogIn = () => {
           variant='contained'
           onClick={e => {
             e.preventDefault();
-            // axios({
-            //   method: 'post',
-            //   url: `${django.url}/user/login/`,
-            //   headers: {
-            //     'Accept': '*/*',
-            //     'Content-Type': 'application/json'
-            //   },
-            //   data: {
-            //     username: username,
-            //     password: password
-            //   }
-            // })
-            // .then(response => {
-            //   document.cookie = `djangoToken=${response.data.token}; SameSite=None; Secure`;
-            // });
             router.push('signup');
           }}
         >
