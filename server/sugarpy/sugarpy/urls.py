@@ -21,7 +21,7 @@ from rest_framework import routers, serializers, viewsets
 from rest_framework.authtoken.views import obtain_auth_token
 
 from readings.views import ReadingDetail, ReadingList, ReadingListTimeSpan
-from user_details.views import SinglerUserDetail, UserDetailList, UserList, UserDetail
+from user_details.views import SinglerUserDetail, UserDetailList, UserList, UserDetail, NewUser
 #from sugarchart_user.views import SugarChartUserList, SugarChartUserDetail
 
 #from user_details.serializers import UserDetailSerializer

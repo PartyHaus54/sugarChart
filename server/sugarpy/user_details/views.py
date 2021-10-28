@@ -4,16 +4,34 @@ from rest_framework import generics, permissions, renderers
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import action
 from user_details.models import UserDetail as UserDetailModel
-from user_details.serializers import UserDetailSerializer, UserSerializer
+from user_details.serializers import UserDetailSerializer, UserSerializer, RegisterUserSerializer
 from user_details.permissions import IsAdminOrCurrentUser
 
-class UserList(generics.ListCreateAPIView):
+class NewUser(generics.ListCreateAPIView):
   def get_queryset(self):
     if self.request.user.is_staff == True:
       return User.objects.all()
     elif not self.request.user.is_anonymous:
       user_id = self.request.user.id
       return User.objects.filter(user_id=user_id)
+    else:
+      return
+  serializer_class = RegisterUserSerializer
+  permissions_classes = (
+    IsAdminOrCurrentUser
+  )
+
+  @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+  def perform_create(self, serializer):
+    serializer.save()
+
+class UserList(generics.ListCreateAPIView):
+  def get_queryset(self):
+    if self.request.user.is_staff == True:
+      return User.objects.all()
+    elif not self.request.user.is_anonymous:
+      id = self.request.user.id
+      return User.objects.filter(id=id)
     else:
       return
   serializer_class = UserSerializer
@@ -43,8 +61,8 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     if self.request.user.is_staff == True:
       return User.objects.filter(id=id)
     elif not self.request.user.is_anonymous:
-      user_id = self.request.user.id
-      return User.objects.filter(id=id)
+      user = self.request.user.id
+      return User.objects.filter(user=user)
     else:
       return
   serializer_class = UserSerializer
@@ -57,8 +75,8 @@ class UserDetailList(generics.ListCreateAPIView):
     if self.request.user.is_staff == True:
       return UserDetailModel.objects.all()
     elif not self.request.user.is_anonymous:
-      user_id = self.request.user.id
-      return UserDetailModel.objects.filter(user_id=user_id)
+      user = self.request.user.id
+      return UserDetailModel.objects.filter(user=user)
     else:
       return
   serializer_class = UserDetailSerializer
@@ -76,8 +94,8 @@ class SinglerUserDetail(generics.RetrieveUpdateDestroyAPIView):
     if self.request.user.is_staff == True:
       return UserDetailModel.objects.filter(id=id)
     elif not self.request.user.is_anonymous:
-      user_id = self.request.user.id
-      return UserDetailModel.objects.filter(id=id, user_id=user_id)
+      user = self.request.user.id
+      return UserDetailModel.objects.filter(id=id, user=user)
     else:
       return
   serializer_class = UserDetailSerializer
