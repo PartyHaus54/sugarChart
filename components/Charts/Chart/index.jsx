@@ -54,7 +54,7 @@ const Chart = ({timeRange, readings}) => {
       rangeMin: null,
       rangeMax: 50
     }
-  }
+  };
 
   const glucoseLevelRanges = [
     {
