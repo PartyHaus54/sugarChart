@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import pytz
 from rest_framework import generics, permissions, renderers
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import action
@@ -23,7 +24,32 @@ class ReadingList(generics.ListCreateAPIView):
 
   @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
   def perform_create(self, serializer):
-    serializer.save(user_id=self.request.user.id)
+    entered_date = self.request.data["observed_date"]
+    year = int(entered_date[0:4])
+    month = int(entered_date[5:7])
+    day = int(entered_date[8:10])
+    print(entered_date)
+    print(year)
+    print(month)
+    print(day)
+    entered_time = self.request.data["observed_time"]
+    hour = int(entered_time[0:2])
+    minute = int(entered_time[3:5])
+    second = int(entered_time[6:8])
+    print(entered_time)
+    print(hour)
+    print(minute)
+    print(second)
+    naive_datetime = datetime(year, month, day, hour, minute, second)
+    tz = self.request.user.details.timezone
+    tz_datetime = pytz.timezone(tz).localize(naive_datetime)
+    print(tz_datetime)
+    serializer.save(
+      user_id=self.request.user.id,
+      weight_at_reading=self.request.user.details.weight,
+      age_at_reading=self.request.user.details.age,
+      observed_datetime=tz_datetime
+    )
 
 
 class ReadingListTimeSpan(generics.ListCreateAPIView):
@@ -47,10 +73,10 @@ class ReadingListTimeSpan(generics.ListCreateAPIView):
     IsAdminOrCurrentUser
   )
 
-  @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
-  def perform_create(self, serializer):
-    serializer.save(user_id=self.request.user.id)
-    #serializer.save()
+  # @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+  # def perform_create(self, serializer):
+  #   serializer.save(user_id=self.request.user.id)
+  #   #serializer.save()
 
 
 class ReadingDetail(generics.RetrieveUpdateDestroyAPIView):
