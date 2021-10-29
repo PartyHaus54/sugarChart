@@ -10,7 +10,7 @@ import logo from '../../public/logo.png';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-const StyledDiv = styled.div`
+const StyledLoginDiv = styled.div`
   font-family: arial;
   display: flex;
   align-items: center;
@@ -38,6 +38,10 @@ const StyledDiv = styled.div`
   }
 `;
 
+const StyledConstructionP = styled.p`
+  text-align: center;
+`;
+
 import { useRouter } from 'next/router';
 
 import axios from 'axios';
@@ -48,7 +52,7 @@ const LogIn = () => {
   const [password, setPassword] = useState('');
 
   return (
-    <StyledDiv>
+    <StyledLoginDiv>
       {/* <img src={logo}/> */}
       <h1>Sugar Chart</h1>
       <div>
@@ -58,7 +62,7 @@ const LogIn = () => {
         <TextField
           required
           id='username'
-          label='username'
+          label='Username'
           variant='filled'
           fullWidth
           onChange={(e) => {
@@ -68,7 +72,7 @@ const LogIn = () => {
         <TextField
           required
           id='password'
-          label='password'
+          label='Password'
           type='password'
           autoComplete='current-password'
           variant='filled'
@@ -102,9 +106,18 @@ const LogIn = () => {
         >
           Sign In
         </Button>
-        <p>🚧🚧This page is still under construction. No user name or password is required. Please select the Sign In button to enter🚧🚧</p>
+        <Button
+          variant='contained'
+          onClick={e => {
+            e.preventDefault();
+            router.push('signup');
+          }}
+        >
+          Sign Up
+        </Button>
+        <StyledConstructionP>🚧🚧This page is still under construction.🚧🚧</StyledConstructionP>
       </form>
-    </StyledDiv>
+    </StyledLoginDiv>
   )
 }
 

@@ -19,32 +19,58 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
 from rest_framework.authtoken.views import obtain_auth_token
+
 from readings.views import ReadingDetail, ReadingList, ReadingListTimeSpan
+from user_details.views import SinglerUserDetail, UserDetailList, UserList, UserDetail, NewUser
+#from sugarchart_user.views import SugarChartUserList, SugarChartUserDetail
+
+#from user_details.serializers import UserDetailSerializer
+
+#from sugarchart_user.models import SugarChartUser
 
 # Serializers define the API representation
-class UserSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'date_joined']
+# class UserSerializer(serializers.HyperlinkedModelSerializer):
+#     #user_details = UserDetailSerializer(many=True, read_only=True)
+#     class Meta:
+#         model = User
+#         fields = ['id', 'username', 'first_name', 'last_name', 'email']
 
-# ViewSets definte the view behavior
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+# Serializers define the API representation
+# class SugarChartUserSerializer(serializers.HyperlinkedModelSerializer):
+#     #user_details = UserDetailSerializer(many=True, read_only=True)
+#     class Meta:
+#         model = SugarChartUser
+#         fields = ['username', 'first_name', 'last_name', 'email']
+
+# ViewSets define the view behavior
+# class UserViewSet(viewsets.ModelViewSet):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+
+# ViewSets define the view behavior
+# class SugarChartUserViewSet(viewsets.ModelViewSet):
+#     queryset = SugarChartUser.objects.all()
+#     serializer_class = SugarChartUserSerializer
 
 # Routers provide an easy way of automatically determining the URL conf
 router = routers.DefaultRouter()
-router.register(r'users', UserViewSet)
+#router.register(r'users', UserList.as_view())
+#router.register(r'sugarchart_users', SugarChartUserViewSet)
 
 # Wire up our API using automatic URL routing
 # Additionally, we include login URLs for the browsable API
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
+    path('users/', UserList.as_view()),
+    path('users/<int:pk>/', UserDetail.as_view()),
+    path('register/', NewUser.as_view()),
     path('user/login/', obtain_auth_token),
     path('api-auth/', include('rest_framework.urls')),
     #path('api/login/', login),
     path('api/readings/', ReadingList.as_view()),
     path('api/readings/<int:pk>/', ReadingDetail.as_view()),
-    path('api/readings_since/<int:days_ago>/', ReadingListTimeSpan.as_view())
+    path('api/readings_since/<int:days_ago>/', ReadingListTimeSpan.as_view()),
+    path('api/user_details/', UserDetailList.as_view()),
+    path('api/user_details/<int:pk>/', SinglerUserDetail.as_view())
 ]

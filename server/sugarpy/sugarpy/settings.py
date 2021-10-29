@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'readings.apps.ReadingsConfig',
+    #'sugarchart_user.apps.SugarchartUserConfig',
+    'user_details.apps.UserDetailsConfig',
     'corsheaders'
 ]
 
@@ -86,6 +88,7 @@ DATABASES = {
     }
 }
 
+#AUTH_USER_MODEL = 'sugarchart_user.SugarChartUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
