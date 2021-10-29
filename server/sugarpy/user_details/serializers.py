@@ -5,7 +5,7 @@ from user_details.models import UserDetail as UserDetail
 class UserDetailSerializer(serializers.ModelSerializer):
   class Meta:
     model = UserDetail
-    fields = ('age', 'weight', 'timezone', 'show_weight', 'show_height')
+    fields = ('date_of_birth', 'weight', 'timezone', 'show_weight', 'show_age')
 
 class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
   details = UserDetailSerializer(many=False, read_only=True)

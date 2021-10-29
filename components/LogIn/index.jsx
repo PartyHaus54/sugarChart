@@ -115,7 +115,7 @@ const LogIn = () => {
         >
           Sign Up
         </Button>
-        <StyledConstructionP>🚧🚧This page is still under construction.🚧🚧</StyledConstructionP>
+        <StyledConstructionP>🚧This page is still under construction.🚧</StyledConstructionP>
       </form>
     </StyledLoginDiv>
   )
