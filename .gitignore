@@ -4,6 +4,10 @@
 server/sugar-venv/
 server/sugarpy/sugarpy/secrets.py
 
+# django
+server/sugarpy/readings/
+server/sugarpy/sugarpy/
+
 # dependencies
 /node_modules
 /.pnp
