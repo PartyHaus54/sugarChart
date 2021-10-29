@@ -40,17 +40,17 @@ class ReadingList(generics.ListCreateAPIView):
     naive_datetime = datetime(year, month, day, hour, minute, second)
     tz = self.request.user.details.timezone
     tz_datetime = pytz.timezone(tz).localize(naive_datetime)
-    print(tz_datetime)
+    #print(tz_datetime)
 
     date_of_birth = self.request.user.details.date_of_birth
-    print(date_of_birth)
+    #print(date_of_birth)
     # birth_year = int(date_of_birth)
     # birth_month = int(date_of_birth)
     # birth_day = int(date_of_birth)
     # birth_date = datetime(birth_year, birth_month, birth_day)
     age_delta = observed_date - date_of_birth
     age = age_delta.days / 365
-    print(age)
+    #print(age)
 
     serializer.save(
       user_id=self.request.user.id,
@@ -61,30 +61,24 @@ class ReadingList(generics.ListCreateAPIView):
 
 
 class ReadingListTimeSpan(generics.ListCreateAPIView):
-  #queryset = Reading.objects.all()
   def get_queryset(self):
-    now = datetime.now()
-    print(now)
+    naive_now = datetime.utcnow()
+    now = pytz.utc.localize(naive_now)
     days_ago = self.kwargs['days_ago']
     time_span = timedelta(days=days_ago)
     span_start = now - time_span
     print(span_start)
     if self.request.user.is_staff == True:
-      return Reading.objects.filter(observed_date__gte=span_start)
+      return Reading.objects.filter(observed_datetime__gte=span_start)
     elif not self.request.user.is_anonymous:
       user_id = self.request.user.id
-      return Reading.objects.filter(user_id=user_id, observed_date__gte=span_start)
+      return Reading.objects.filter(user_id=user_id, observed_datetime__gte=span_start)
     else:
       return
   serializer_class = ReadingSerializer
   permissions_classes = (
     IsAdminOrCurrentUser
   )
-
-  # @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
-  # def perform_create(self, serializer):
-  #   serializer.save(user_id=self.request.user.id)
-  #   #serializer.save()
 
 
 class ReadingDetail(generics.RetrieveUpdateDestroyAPIView):
