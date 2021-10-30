@@ -35,6 +35,7 @@ const Profile = ({}) => {
   const [timezone, setTimeZone] = useState('');
   const [showWeight, setShowWeight] = useState(false);
   const [showAge, setShowAge] = useState(false);
+  const [show24Hours, setShow24Hours] = useState(false);
   const [defaultTimespan, setDefaultTimespan] = useState(7);
 
   const router = useRouter();
@@ -82,7 +83,8 @@ const Profile = ({}) => {
         timezone: timezone,
         default_timespan: defaultTimespan,
         show_weight: showWeight,
-        show_age: showAge
+        show_age: showAge,
+        show_24_hours: show24Hours
       }
     })
     .then((res) => {
@@ -119,6 +121,7 @@ const Profile = ({}) => {
           setTimeZone={setTimeZone}
           setShowWeight={setShowWeight}
           setShowAge={setShowAge}
+          setShow24Hours={setShow24Hours}
           setDefaultTimespan={setDefaultTimespan}
           toggleDisplayMode={toggleDisplayMode}
         />

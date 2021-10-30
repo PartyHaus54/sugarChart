@@ -20,6 +20,7 @@ class Reading(models.Model):
   glucose_level = models.IntegerField(null=False)
   weight_at_reading = models.IntegerField(null=True)
   age_at_reading = models.IntegerField(null=True)
+  is_deleted = models.BooleanField(default=False)
 
   class Meta:
     ordering = ['observed_date', 'observed_time']

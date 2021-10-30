@@ -11,3 +11,4 @@ class UserDetail(models.Model):
   show_age = models.BooleanField(default=False)
   image = models.TextField(null=True)
   default_timespan = models.IntegerField(default=7)
+  show_24_hours = models.BooleanField(default=False)

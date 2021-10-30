@@ -24,7 +24,7 @@ const StyledDiv = styled.div`
 `;
 
 const DashBoard = ({dash}) => {
-  const [avgSugarLevel, setAvgSugarLevel] = useState(100);
+  const [avgSugarLevel, setAvgSugarLevel] = useState('-');
   const [token, setToken] = useState(null);
 
   useEffect(() => {

@@ -27,6 +27,7 @@ const EditUser = (props) => {
   const [editingPassword, setEditingPassword] = useState(false);
   const [showWeight, setShowWeight] = useState(props.userInfo.details.show_weight);
   const [showAge, setShowAge] = useState(props.userInfo.details.show_age);
+  const [show24Hours, setShow24Hours] = useState(props.userInfo.details.show_24_hours);
 
   const router = useRouter();
 
@@ -40,6 +41,12 @@ const EditUser = (props) => {
     var updatedShowWeight = !showWeight;
     setShowWeight(updatedShowWeight);
     props.setShowWeight(updatedShowWeight);
+  }
+
+  const handle24HoursPreferenceChange = () => {
+    var updated24HourPreference = !show24Hours;
+    setShow24Hours(updated24HourPreference);
+    props.setShow24Hours(updated24HourPreference);
   }
 
   const handleSaveClick = () => {
@@ -98,7 +105,7 @@ const EditUser = (props) => {
               onChange={() => { handleWeightPreferenceChange() }}
             />
           }
-          label="Show Weight In Reading List"
+          label="Weight At Time Of Reading"
           labelPlacement="start"
         />
         <FormControlLabel
@@ -110,7 +117,19 @@ const EditUser = (props) => {
               onChange={() => {handleAgePreferenceChange()}}
              />
           }
-          label="Show Age In Reading List"
+          label="Age At Time Of Reading"
+          labelPlacement="start"
+        />
+        <FormControlLabel
+          value={props.userInfo.details.show_24_hours}
+          variant="filled"
+          control={
+            <Checkbox
+              checked={show24Hours}
+              onChange={() => {handle24HoursPreferenceChange()}}
+             />
+          }
+          label="24 Hour Mode For Readings"
           labelPlacement="start"
         />
         <TimeZoneList timezone={props.userInfo.details.timezone} setTimeZone={props.setTimeZone} value={props.userInfo.details.timezone} />

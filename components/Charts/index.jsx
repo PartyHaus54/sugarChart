@@ -4,9 +4,14 @@ import axios from 'axios';
 
 import Dropdown from '../FormComponents/Dropdown';
 import Chart from './Chart';
+import DisplayReadings from '../ReadingsList/DisplayReadings.jsx';
+import EditReadings from '../ReadingsList/EditReadings.jsx';
 
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 
 const sampleData = [
   {
@@ -131,26 +136,74 @@ const sampleData = [
 ];
 
 const Charts = (props) => {
+  const placeholderUser = {
+    username: 'Username',
+    details: {
+      date_of_birth: '2021-09-10',
+      weight: 0,
+      timezone: 'US/Pacific',
+      default_timespan: 7,
+      show_weight: false,
+      show_age: false,
+      image: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'
+    }
+  };
+
   const [timeRange, setTimeRange] = useState(7);
   const [readings, setReadings] = useState([]);
+  const [userInfo, setUserInfo] = useState(placeholderUser);
+  const [editingReadings, setEditingReadings] = useState(false);
   const [token, setToken] = useState('');
 
   useEffect(() => {
-    var token = django.tokenLoader();
+    getUserInfoForReadings();
+    // var token = django.tokenLoader();
+
+    // axios({
+    //   method: 'get',
+    //   url: `${django.url}/api/readings_since/${timeRange}/`,
+    //   headers: {
+    //     'Accept': '*/*',
+    //     "Authorization": `Token ${token}`,
+    //     'Content-Type': 'application/json'
+    //   }
+    // })
+    // .then(response => {
+    //   setToken(token);
+    //   setReadings(response.data);
+    // });
+  }, []);
+
+  const getUserInfoForReadings = () => {
+    var newToken = django.tokenLoader();
     axios({
       method: 'get',
-      url: `${django.url}/api/readings_since/${timeRange}/`,
+      url: `${django.url}/user_info/`,
       headers: {
         'Accept': '*/*',
-        "Authorization": `Token ${token}`,
+        'Authorization': `Token ${newToken}`,
         'Content-Type': 'application/json'
       }
     })
-    .then(response => {
-      setToken(token);
-      setReadings(response.data);
+    .then(userInfoResponse => {
+      setUserInfo(userInfoResponse.data[0]);
+      var timespan = userInfoResponse.data[0].details.default_timespan;
+      console.log('Default timespan', timespan);
+      axios({
+        method: 'get',
+        url: `${django.url}/api/readings_since/${timespan}/`,
+        headers: {
+          'Accept': '*/*',
+          "Authorization": `Token ${newToken}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(readingsResponse => {
+        setToken(newToken);
+        setReadings(readingsResponse.data);
+      });
     });
-  }, []);
+  }
 
   const changeHandler = (days) => {
     //TODO:
@@ -197,19 +250,27 @@ const Charts = (props) => {
         handleChange={(days) => {
           console.log('days', days);
           changeHandler(days);
-        }}/>
-
-      <table>
-        <tbody>
-          {readings.map((reading) => (
-            <tr key={reading.id}>
-              <td className="date">{reading.observed_date}</td>
-              <td className="time">{reading.observed_time}</td>
-              <td className="reading">{reading.glucose_level}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        }}
+      />
+      <FormControlLabel
+        value={editingReadings}
+        variant="filled"
+        control={
+          <Checkbox
+            checked={editingReadings}
+            onChange={() => { setEditingReadings(!editingReadings) }}
+          />
+        }
+        label="Edit Readings"
+        labelPlacement="start"
+      />
+      {
+        !editingReadings
+          ?
+        <DisplayReadings readings={readings} userInfo={userInfo} editingReadings={editingReadings} />
+          :
+        <EditReadings readings={readings} userInfo={userInfo} editingReadings={editingReadings}/>
+      }
     </div>
 )}
 

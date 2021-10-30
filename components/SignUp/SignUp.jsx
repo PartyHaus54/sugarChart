@@ -20,17 +20,9 @@ const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState(null);
   const [weight, setWeight] = useState(null);
-  const [timezone, setTimeZone] = useState('');
-
-  const stateSetters = {
-    password: setPassword,
-    passwordConfirmation: setPasswordConfirmation,
-    dateOfBirth: setDateOfBirth,
-    weight: setWeight,
-    timezone: setTimeZone
-  }
+  const [timezone, setTimeZone] = useState('UTC');
 
   const handleRegistrationClick = (e) => {
     e.preventDefault();
