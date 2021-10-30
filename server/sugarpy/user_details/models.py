@@ -9,3 +9,5 @@ class UserDetail(models.Model):
   timezone = models.CharField(max_length=50, blank=True, null=True)
   show_weight = models.BooleanField(default=False)
   show_age = models.BooleanField(default=False)
+  image = models.TextField(null=True)
+  default_timespan = models.IntegerField(default=7)

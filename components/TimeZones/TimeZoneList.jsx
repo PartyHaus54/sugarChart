@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
@@ -458,19 +458,18 @@ const TimeZoneList = ({timezone, setTimeZone}) => {
   return (
     <div >
       <TextField
-        //labelId="time-zone-dropdown-label"
         id="time-zone-dropdown"
         select
         fullWidth
+        defaultValue={timezone}
         variant="filled"
-        value={timezone}
         label="Time Zone"
         onChange={(e) =>{ handleChange(e)} }
       >
         {
-          timeZoneOptions.map((option, key) => {
-            return <MenuItem value={option} key={key}>{option}</MenuItem>
-          })
+          timeZoneOptions.map((option, key) =>
+            <MenuItem value={option} key={key}>{option}</MenuItem>
+          )
         }
       </TextField>
     </div>

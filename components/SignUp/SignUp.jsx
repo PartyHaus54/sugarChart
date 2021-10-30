@@ -24,6 +24,14 @@ const SignUp = () => {
   const [weight, setWeight] = useState(null);
   const [timezone, setTimeZone] = useState('');
 
+  const stateSetters = {
+    password: setPassword,
+    passwordConfirmation: setPasswordConfirmation,
+    dateOfBirth: setDateOfBirth,
+    weight: setWeight,
+    timezone: setTimeZone
+  }
+
   const handleRegistrationClick = (e) => {
     e.preventDefault();
     if (password.length > 4 && password === passwordConfirmation) {

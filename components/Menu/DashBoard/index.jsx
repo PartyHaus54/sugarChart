@@ -1,4 +1,5 @@
 import React from 'react';
+
 import styled from '@emotion/styled';
 
 const StyledDiv = styled.div`
@@ -22,7 +23,7 @@ const StyledDiv = styled.div`
 
 const DashBoard = ({dash}) => (
   <StyledDiv>
-    <p>{dash}</p>
+      <p>{dash}</p>
   </StyledDiv>
 );
 
