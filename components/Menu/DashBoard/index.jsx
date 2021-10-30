@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect} from 'react';
+import django from '../../../utils/django.js';
+import axios from 'axios';
 
 import styled from '@emotion/styled';
 
@@ -21,10 +23,54 @@ const StyledDiv = styled.div`
   }
 `;
 
-const DashBoard = ({dash}) => (
-  <StyledDiv>
-      <p>{dash}</p>
-  </StyledDiv>
-);
+const DashBoard = ({dash}) => {
+  const [avgSugarLevel, setAvgSugarLevel] = useState(100);
+  const [token, setToken] = useState(null);
+
+  useEffect(() => {
+    getAverage();
+  });
+
+  const getAverage = () => {
+    var token = django.tokenLoader();
+    axios({
+      method: 'get',
+      url: `${django.url}/user_info/`,
+      headers: {
+        'Accept': '*/*',
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        var defaultTimespan = response.data[0].details.id;
+        axios({
+          method: 'get',
+          url: `${django.url}/api/readings_since/${defaultTimespan}/`,
+          headers: {
+            'Accept': '*/*',
+            "Authorization": `Token ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+          .then(response => {
+            var readings = response.data;
+            var total = 0;
+            readings.forEach(reading => {
+              total += reading.glucose_level;
+            });
+            if (readings.length > 0) {
+              setAvgSugarLevel(total / readings.length);
+            }
+          });
+      });
+  }
+
+  return (
+    <StyledDiv>
+        <p>{avgSugarLevel}</p>
+    </StyledDiv>
+  )
+  };
 
 export default DashBoard;

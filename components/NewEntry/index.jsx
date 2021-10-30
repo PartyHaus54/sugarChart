@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import django from '../../utils/django';
+import django from '../../utils/django.js';
 import axios from 'axios';
 
 import Modal from '../Modal';
