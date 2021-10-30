@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import django from '../../utils/django';
+import TimeZoneList from '../TimeZones/TimeZoneList.jsx';
 import styled from '@emotion/styled';
 
 import axios from 'axios';
@@ -8,6 +9,9 @@ import { useRouter } from 'next/router';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from '@mui/lab/DatePicker';
 
 const StyledSignUpDiv = styled.div`
 `;
@@ -16,9 +20,17 @@ const SignUp = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
-  const [age, setAge] = useState(null);
+  const [dateOfBirth, setDateOfBirth] = useState('');
   const [weight, setWeight] = useState(null);
-  const [timezone, setTimeZone] = useState(null);
+  const [timezone, setTimeZone] = useState('');
+
+  const stateSetters = {
+    password: setPassword,
+    passwordConfirmation: setPasswordConfirmation,
+    dateOfBirth: setDateOfBirth,
+    weight: setWeight,
+    timezone: setTimeZone
+  }
 
   const handleRegistrationClick = (e) => {
     e.preventDefault();
@@ -59,7 +71,7 @@ const SignUp = () => {
                 'Content-Type': 'application/json'
               },
               data: {
-                age: age,
+                date_of_birth: dateOfBirth,
                 weight: weight,
                 timezone: timezone
               }
@@ -105,16 +117,26 @@ const SignUp = () => {
           setPasswordConfirmation(e.target.value);
         }}
       />
-      <TextField
-        id='age'
-        label='Age'
-        type='number'
-        variant='filled'
-        fullWidth
-        onChange={(e) => {
-          setAge(e.target.value);
-        }}
-      />
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <DatePicker
+          label="Date of Birth"
+          value={dateOfBirth}
+          onChange={(e) => {
+            setDateOfBirth(e.target.value);
+          }}
+          renderInput={() => <TextField
+            id='date-of-birth'
+            label='Date of Birth'
+            type='date'
+            variant='filled'
+            fullWidth
+            value={dateOfBirth}
+            onChange={(e) => {
+              setDateOfBirth(e.target.value);
+            }}
+          />}
+        />
+      </LocalizationProvider>
       <TextField
         id='weight'
         label='Weight'
@@ -125,15 +147,7 @@ const SignUp = () => {
           setWeight(e.target.value);
         }}
       />
-      <TextField
-        id='time-zone'
-        label='Time Zone'
-        variant='filled'
-        fullWidth
-        onChange={(e) => {
-          setTimeZone(e.target.value);
-        }}
-      />
+      <TimeZoneList timezone={timezone} setTimeZone={setTimeZone} />
       <Button
         variant='contained'
         onClick={(e) => { handleRegistrationClick(e) }}

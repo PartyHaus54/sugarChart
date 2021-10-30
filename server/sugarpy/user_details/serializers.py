@@ -5,14 +5,14 @@ from user_details.models import UserDetail as UserDetail
 class UserDetailSerializer(serializers.ModelSerializer):
   class Meta:
     model = UserDetail
-    fields = ('age', 'weight', 'timezone', 'show_weight', 'show_height')
+    fields = ('id', 'date_of_birth', 'weight', 'timezone', 'default_timespan', 'show_weight', 'show_age', 'image')
 
 class RegisterUserSerializer(serializers.HyperlinkedModelSerializer):
   details = UserDetailSerializer(many=False, read_only=True)
 
   class Meta:
     model = User
-    fields = ['username', 'password', 'details']
+    fields = ['username', 'details']
 
   def create(self, validated_data):
     print(validated_data)
@@ -31,7 +31,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
   class Meta:
     model = User
-    fields = ['username', 'password', 'details']
+    fields = ['username', 'details']
 
   # def create(self, validated_data):
   #   print(validated_data)

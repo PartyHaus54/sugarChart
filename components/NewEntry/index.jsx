@@ -45,10 +45,11 @@ const NewEntry = () => {
     })
     .then((res) => {
       console.log(res);
-      alert('Entry Logged');
+      setModalTitle('Entry Submitted');
+      setModalDescription('Thank you for your Entry');
+      setOpen(true);
     }).catch(err => {
       console.log(err);
-      alert('Something went wrong');
     });
 
     //validate the fields
@@ -62,9 +63,9 @@ const NewEntry = () => {
     //if form is not complete
     //notify user what field they need to fill out
     console.log(entry);
-    setModalTitle('Entry Submitted');
-    setModalDescription('Thank you for your Entry');
-    setOpen(true);
+    // setModalTitle('Entry Submitted');
+    // setModalDescription('Thank you for your Entry');
+    // setOpen(true);
   }
 
   return (

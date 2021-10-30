@@ -12,7 +12,7 @@ class NewUser(generics.ListCreateAPIView):
     if self.request.user.is_staff == True:
       return User.objects.all()
     elif not self.request.user.is_anonymous:
-      user_id = self.request.user.id
+      auth_token = self.request.user.auth_token
       return User.objects.filter(user_id=user_id)
     else:
       return
@@ -54,6 +54,21 @@ class UserList(generics.ListCreateAPIView):
     # #   weight = 150,
     # #   timezone = 'US/Pacific'
     # # )
+
+class UserSelfDetail(generics.ListCreateAPIView):
+  def get_queryset(self):
+    #id = self.kwargs['pk']
+    if self.request.user.is_staff == True:
+      return User.objects.filter(id=id)
+    elif not self.request.user.is_anonymous:
+      id = self.request.user.id
+      return User.objects.filter(id=id)
+    else:
+      return
+  serializer_class = UserSerializer
+  permissions_classes = (
+    IsAdminOrCurrentUser
+  )
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
   def get_queryset(self):
