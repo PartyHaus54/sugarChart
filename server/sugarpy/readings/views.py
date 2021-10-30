@@ -35,7 +35,8 @@ class ReadingList(generics.ListCreateAPIView):
     entered_time = self.request.data["observed_time"]
     hour = int(entered_time[0:2])
     minute = int(entered_time[3:5])
-    second = int(entered_time[6:8])
+    second = 0
+    #second = int(entered_time[6:8])
     print(entered_time)
     print(hour)
     print(minute)

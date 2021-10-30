@@ -6,3 +6,5 @@ class UserDetail(models.Model):
   weight = models.IntegerField(blank=True, null=True)
   age = models.IntegerField(blank=True, null=True)
   timezone = models.CharField(max_length=50, blank=True, null=True)
+  show_weight = models.BooleanField(default=False)
+  show_age = models.BooleanField(default=False)
