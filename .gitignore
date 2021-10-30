@@ -5,7 +5,6 @@ server/sugarpy/sugarpy/secrets.py
 
 # django
 server/sugar-venv/
-<<<<<<< HEAD
 server/sugarpy/sugarpy/__pycache__
 server/sugarpy/readings/__pycache__
 server/sugarpy/readings/migrations
@@ -13,11 +12,9 @@ server/sugarpy/sugarchart_user/__pycache__
 server/sugarpy/sugarchart_user/migrations
 server/sugarpy/user_details/migrations
 server/sugarpy/user_details/__pycache__
-=======
 server/sugarpy/readings/__pycache__/
 server/sugarpy/sugarpy/__pycache__/
 
->>>>>>> main
 
 # dependencies
 /node_modules

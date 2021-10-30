@@ -87,9 +87,9 @@ const Profile = ({}) => {
     })
     .then((res) => {
       console.log(res);
+      setDisplayMode(true);
+      getUserInfo();
     });
-    setDisplayMode(true);
-    getUserInfo();
   }
 
   const toggleDisplayMode = () => {
