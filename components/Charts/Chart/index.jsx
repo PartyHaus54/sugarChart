@@ -20,6 +20,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
   const [timeDataMin, setTimeDataMin] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
   const [displayPoints, setDisplayPoints] = useState([]);
+  const [displayLabels, setDisplayLabels] = useState([]);
   const [displayLines, setDisplayLines] = useState([]);
   const [displayRanges, setDisplayRanges] = useState([]);
   const [pointSize, setPointSize] = useState(5);
@@ -144,7 +145,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
               // Formula works
     // Except that the SVG vertical scale moves downards, so we need to reverse that logic slightly when dealing with the vertical
 
-    var timeZoneOffset = -7;
+    //var timeZoneOffset = -7;
     // Inspiring client and devs are not UTC, but Django will be storing all users as UTC for simplicity
     // Because of this, the x-axis is calibrated correctly according to the timespan, but the query will be miscmatched (7 hours into future)
     // We'll need to implement mechanism for converting the user's UI time to the server's UTC
@@ -217,12 +218,33 @@ const Chart = ({timeRange, readings, activeReading}) => {
       });
     });
 
+    var labelPreppedForRender = [];
     readings.forEach((reading, index) => {
       // Get unix timestamp
       var timestamp = new Date(`${reading.observed_date}T${reading.observed_time}`).getTime();
 
       var xRender = convertTimeDataForRender(timestamp - timeDataMin, timeDataDivisor);
       var yRender = convertReadingLevelForRender(reading.glucose_level - minReading, readingDataDivisor);
+
+      var labelOverlap = false;
+      labelPreppedForRender.forEach(label => {
+        var width = Math.abs(label.x - xRender);
+        var height = Math.abs(label.y - yRender);
+        var distance = Math.pow(width ** 2 + height ** 2, 0.5);
+        if (distance < 20) {
+          labelOverlap = true;
+        }
+      });
+
+      if (!labelOverlap) {
+        labelPreppedForRender.push({
+          x: xRender,
+          y: yRender,
+          label: reading.glucose_level
+        });
+      }
+
+      setDisplayLabels(labelPreppedForRender);
 
       // Points
       var coordinate = {
@@ -378,6 +400,12 @@ const Chart = ({timeRange, readings, activeReading}) => {
           displayPoints.map(point => (
             <g>
               <circle key={point.id} cx={point.x} cy={point.y} r={pointSize}/>
+            </g>
+          ))
+        }
+        {
+          displayLabels.map(point => (
+            <g>
               <text x={point.x + pointSize} y={point.y - pointSize}>{point.label}</text>
             </g>
           ))
