@@ -23,11 +23,12 @@ const StyledHintDiv = styled.a`
   color: lightgray;
 `;
 
-const EditReadingModal = ({activeReading, updateReading, userInfo, open, setOpen, toggleView }) => {
+const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo, open, setOpen, toggleView }) => {
   const [readingDate, setReadingDate] = useState('2021-06-14');
   const [readingTime, setReadingTime] = useState('12:00:00');
   const [readingLevel, setReadingLevel] = useState(100);
   const [readingWeight, setReadingWeight] = useState(150);
+  const [deleteLocked, setDeleteLocked] = useState(true);
 
   useEffect(() => {
     setReadingTime(activeReading.observed_time);
@@ -45,7 +46,8 @@ const EditReadingModal = ({activeReading, updateReading, userInfo, open, setOpen
   };
 
   const handleDeleteClick = () => {
-
+    deleteReading();
+    setDeleteLocked(true);
   };
 
   return (
@@ -91,9 +93,9 @@ const EditReadingModal = ({activeReading, updateReading, userInfo, open, setOpen
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             Sugar Level:
-            <input id="raeding-level"
+            <input id="reading-level"
               type="number"
-              placeholder={readingLevel}
+              value={readingLevel}
               onChange={(e) => {
                 setReadingLevel(Number(e.target.value));
               }}
@@ -105,7 +107,7 @@ const EditReadingModal = ({activeReading, updateReading, userInfo, open, setOpen
               Weight at Reading:
               <input id="reading-weight"
                 type="number"
-                placeholder={readingWeight}
+                value={readingWeight}
                 onChange={(e) => {
                   setReadingWeight(Number(e.target.value));
                 }}
@@ -120,18 +122,19 @@ const EditReadingModal = ({activeReading, updateReading, userInfo, open, setOpen
           }
           <div>
             <Button
-              disabled={true}
-              color='success'
+              disabled={deleteLocked}
+              color='error'
               variant='contained'
               onClick={e => {
                 e.preventDefault();
+                handleDeleteClick();
               }}
             >
               Delete
             </Button>
             <Checkbox
-              checked={false}
-            //onChange={() => { handle24HoursPreferenceChange() }}
+              checked={!deleteLocked}
+              onChange={() => { setDeleteLocked(!deleteLocked); }}
             />
             <Button
               color='success'

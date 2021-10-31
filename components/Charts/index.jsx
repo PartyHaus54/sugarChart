@@ -273,12 +273,40 @@ const Charts = (props) => {
     });
   };
 
+  const deleteReading = () => {
+    axios({
+      method: 'delete',
+      url: `${django.url}/api/readings/${activeReading.id}/`,
+      headers: {
+        'Accept': '*/*',
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(() => {
+      axios({
+        method: 'get',
+        url: `${django.url}/api/readings_since/${timeRange}/`,
+        headers: {
+          'Accept': '*/*',
+          "Authorization": `Token ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(readingsResponse => {
+        setReadings(readingsResponse.data);
+        setOpen(false);
+      });
+    });
+  };
+
   return (
     <div>
       <EditReadingModal
         open={open}
         activeReading={activeReading}
         updateReading={updateReading}
+        deleteReading={deleteReading}
         userInfo={userInfo}
         setOpen={setOpen}
         toggleView={() => { setOpen(!open); }}
