@@ -9,19 +9,30 @@ const StyledDiv = styled.div`
 
 const StyledSVG = styled.svg`
   background-color: white;
-`
+`;
 
-const Chart = ({timeRange, readings}) => {
+const StyledAxisText = styled.text`
+  font-size: 24px;
+`;
+
+const Chart = ({timeRange, readings, activeReading}) => {
   const [chartWidth, setChartWidth] = useState(0);
+  const [timeDataMin, setTimeDataMin] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
   const [displayPoints, setDisplayPoints] = useState([]);
   const [displayLines, setDisplayLines] = useState([]);
   const [displayRanges, setDisplayRanges] = useState([]);
+  const [pointSize, setPointSize] = useState(5);
+  const [activePoint, setActivePoint] = useState({x: 0, y:0});
+  const [xAxis, setXAxis] = useState({x1: 0, y1: 0, x2: 0, y2: 0, ticks: [], labels: []});
+  const [yAxis, setYAxis] = useState({ x1: 0, y1: 0, x2: 0, y2: 0, ticks: [], labels: [] });
+  //const [padding, setPadding] = useState(padding);
 
   var viewHeight = 500;
   var viewWidth = 500;
   const paddingPercent = 0.1;
   var padding = viewWidth * paddingPercent;
+  //setPadding(padding);
 
   const colorRanges = {
     dangerouslyHigh: {
@@ -87,6 +98,30 @@ const Chart = ({timeRange, readings}) => {
     updateRenderData(readings, timeRange);
   }, [readings]);
 
+  useEffect(() => {
+    if (activeReading) {
+    //updateActivePoint();
+    }
+  }, [activeReading]);
+
+  const convertTimeDataForRender = (point, divisor) => {
+    // Issue is suspected to be in time zone
+    // The Now - timespan and the reading just need to be in the same timezone
+    // Handled elsewhere
+    // Django string is being stored as PDT
+
+    // With hard coded point, and the current divisor/padding calculations, it works
+    // The issue is that the point being passed into this function is not accurate
+    var renderValue = (point / divisor) + padding;
+    // console.log('render value', renderValue);
+    return renderValue;
+  }
+
+  const convertReadingLevelForRender = (point, divisor) => {
+    var renderValue = viewHeight - (point / divisor) - padding;
+    return renderValue;
+  }
+
   const updateRenderData = (readings, dayCount) => {
     var displayRanges = [];
     // All points should be able to have their x and y coordinates set by:
@@ -109,14 +144,14 @@ const Chart = ({timeRange, readings}) => {
               // Formula works
     // Except that the SVG vertical scale moves downards, so we need to reverse that logic slightly when dealing with the vertical
 
-    var timeZoneOffset = 0;
+    var timeZoneOffset = -7;
     // Inspiring client and devs are not UTC, but Django will be storing all users as UTC for simplicity
     // Because of this, the x-axis is calibrated correctly according to the timespan, but the query will be miscmatched (7 hours into future)
     // We'll need to implement mechanism for converting the user's UI time to the server's UTC
       // Plan is to add time zone to user setting
     var now = Date.now();
     // There are 86,400,000 milliseaconds in a day
-    var timeDataMin = now - (86400000 * dayCount) - (3600000 * timeZoneOffset);
+    var timeDataMin = now - (86400000 * dayCount)//  - (3600000 * timeZoneOffset);
     var timeDataMax = now;
 
     var timeDataRange = timeDataMax - timeDataMin;
@@ -124,18 +159,7 @@ const Chart = ({timeRange, readings}) => {
 
     var timeDataDivisor = timeDataRange / timeRenderRange;
 
-    const convertTimeDataForRender = (point, divisor) => {
-      // Issue is suspected to be in time zone
-      // The Now - timespan and the reading just need to be in the same timezone
-      // Handled elsewhere
-      // Django string is being stored as PDT
 
-      // With hard coded point, and the current divisor/padding calculations, it works
-      // The issue is that the point being passed into this function is not accurate
-      var renderValue = (point / divisor) + padding;
-      // console.log('render value', renderValue);
-      return renderValue;
-    }
 
     // The logic for the ranges do not have shared borders (diabetes.min !== preDiabetes.max)
     // Because of this, we need the display to be between
@@ -179,10 +203,7 @@ const Chart = ({timeRange, readings}) => {
     setChartSize();
     findReadingDataRange();
 
-    const convertReadingLevelForRender = (point, divisor) => {
-      var renderValue = viewHeight - (point / divisor) - padding;
-      return renderValue;
-    }
+
 
     glucoseLevelRanges.forEach((range, index) => {
       var glucoseRangeRenderMax = convertReadingLevelForRender(range.rangeMax + 0.5 - minReading, readingDataDivisor);
@@ -207,7 +228,8 @@ const Chart = ({timeRange, readings}) => {
       var coordinate = {
         id: reading.id,
         x: xRender,
-        y: yRender
+        y: yRender,
+        label: reading.glucose_level
       };
 
       // Lines
@@ -226,11 +248,122 @@ const Chart = ({timeRange, readings}) => {
     setDisplayRanges(displayRanges);
     setDisplayPoints(points);
     setDisplayLines(lines);
+
+    // Axis should be able to utilize the above functions smoothly
+    // Finding y axis is just (padding, height - padding) <=> (width - padding, height - padding)
+    // Finding x axis is just (padding, padding) <=> (padding, height - padding)
+
+    // Let's track some midnights!
+    // We don't need to track each one, just the first one and then we can iterate for n - 1 midnights
+    // We can pull it out of thing air with Javascript for the data and then epoch at midnight
+    var time = new Date().toISOString().split('T')[0];
+    var localTime = new Date().getDate();
+    console.log('localTime', localTime);
+    var localOffset = Date().split(' ')[5];
+    var hoursOffset = Number(localOffset.slice(3))/100;
+    var epochMidnight = Date.parse(time) - (3600000 * hoursOffset);
+    console.log('offset:', hoursOffset)
+
+    var hours = (Date.now() - epochMidnight) / 1000 / 60 / 60
+    console.log('EM', epochMidnight);
+    var tickOffset = 0.25
+
+    var xTicks = [];
+    var xLabels = [];
+    var previousLabelRenderPosition = convertTimeDataForRender(epochMidnight - timeDataMin, timeDataDivisor);
+    var firstLabelPlaced = false;
+    while (epochMidnight > timeDataMin) {
+      var tick = {
+        x1: convertTimeDataForRender(epochMidnight - timeDataMin, timeDataDivisor),
+        y1: viewHeight - padding,
+        x2: convertTimeDataForRender(epochMidnight - timeDataMin, timeDataDivisor),
+        y2: viewHeight - padding + padding * tickOffset
+      }
+      if (!firstLabelPlaced) {
+        var label = {
+          x: tick.x1,
+          y: tick.y1 + padding * tickOffset * 2.5,
+          label: time
+        }
+        xLabels.push(label);
+        previousLabelRenderPosition = tick.x1;
+        firstLabelPlaced = true;
+      } else if (previousLabelRenderPosition - tick.x1 > 150) {
+        var label = {
+          x: tick.x1,
+          y: tick.y1 + padding * tickOffset * 2.5,
+          label: time
+        }
+        previousLabelRenderPosition = tick.x1;
+        xLabels.push(label);
+      }
+      xTicks.push(tick);
+      epochMidnight -= 86400000;
+    }
+
+    var xAxisPoints = {
+      x1: padding,
+      y1: viewHeight - padding,
+      x2: viewWidth - padding,
+      y2: viewHeight - padding,
+      ticks: xTicks,
+      labels: xLabels
+    }
+    setXAxis(xAxisPoints);
+
+    var yTicks = [];
+    var yLabels = [];
+    var yAxisPoints = {
+      x1: padding,
+      y1: padding,
+      x2: padding,
+      y2: viewHeight - padding,
+      ticks: yTicks,
+      labels: yLabels
+    }
+    setYAxis(yAxisPoints);
+  }
+
+  const updateActivePoint = () => {
+    var timestamp = new Date(`${activeReading.observed_date}T${activeReading.observed_time}`).getTime();
+    var now = Date.now();
+    var timeDataMin = now - (86400000 * timeRange)//  - (3600000 * timeZoneOffset);
+    var timeDataMax = now;
+
+    var timeDataRange = timeDataMax - timeDataMin;
+    var timeRenderRange = viewWidth - viewWidth * 2 * paddingPercent;
+
+    var timeDataDivisor = timeDataRange / timeRenderRange;
+
+    var xRender = convertTimeDataForRender(timestamp - timeDataMin, timeDataDivisor);
+
+
+
+    var yRender = convertReadingLevelForRender(activeReading.glucose_level - minReading, readingDataDivisor);
+
+    var activePoint = {
+      x: xRender,
+      y: yRender
+    }
+
+    setActivePoint(activePoint);
   }
 
   return (
     <div id="chart-container">
       <StyledSVG width={chartWidth} height={chartHeight} viewBox={`0 0 ${viewWidth} ${viewHeight}`} className="chart">
+        <line x1={xAxis.x1} y1={xAxis.y1} x2={xAxis.x2} y2={xAxis.y2} stroke="black" />
+        {
+          xAxis.ticks.map((tick, key) =>
+            <line key={key} x1={tick.x1} y1={tick.y1} x2={tick.x2} y2={tick.y2} stroke="black" />
+          )
+        }
+        {
+          xAxis.labels.map(label => (
+            <StyledAxisText x={label.x} y={label.y} textAnchor='middle' >{label.label}</StyledAxisText>
+          ))
+        }
+        <line x1={yAxis.x1} y1={yAxis.y1} x2={yAxis.x2} y2={yAxis.y2} stroke="black" />
         {
           displayRanges.map(range => (
             <rect key={range.id} x="0" y={range.y} width={viewWidth} height={range.height} fill={range.color} />
@@ -243,9 +376,16 @@ const Chart = ({timeRange, readings}) => {
         }
         {
           displayPoints.map(point => (
-            <circle key={point.id} cx={point.x} cy={point.y} r="5"/>
+            <g>
+              <circle key={point.id} cx={point.x} cy={point.y} r={pointSize}/>
+              <text x={point.x + pointSize} y={point.y - pointSize}>{point.label}</text>
+            </g>
           ))
         }
+        <g>
+          <circle key={activePoint.id} cx={activePoint.x} cy={activePoint.y} r={activePoint.size} fill={activePoint.color} />
+          <text x={activePoint.x + activePoint.size} y={activePoint.y - activePoint.size}>{activePoint.label}</text>
+        </g>
       </StyledSVG>
     </div>
 )};

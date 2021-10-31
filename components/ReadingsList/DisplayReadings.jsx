@@ -8,9 +8,10 @@ const StyledTable = styled.table`
 import { DateTime } from 'luxon';
 
 
-const DisplayReadings = ({readings, userInfo, editingReadings}) => {
-  const handleReadingClick = (readingId) => {
-    console.log(`This will highlight the point ${readingId} in the chart later`)
+const DisplayReadings = ({readings, userInfo, editingReadings, setActiveReading}) => {
+  const handleReadingClick = (reading) => {
+    setActiveReading(reading);
+    console.log(`The active reading has been set to:`, reading);
   }
 
   return (
@@ -27,7 +28,7 @@ const DisplayReadings = ({readings, userInfo, editingReadings}) => {
       </thead>
       <tbody>
         {readings.map((reading) => (
-          <tr key={reading.id} onClick={() => {handleReadingClick(reading.id)}}>
+          <tr key={reading.id} onClick={() => {handleReadingClick(reading)}}>
             <td className="date">{DateTime.fromISO(reading.observed_date).toFormat('LL-dd-yyyy')}</td>
             {
               userInfo.details.show_24_hours

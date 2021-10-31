@@ -44,7 +44,7 @@ const NewEntry = () => {
       }
     })
     .then((res) => {
-      console.log(res);
+      console.log('The new entry response is:', res);
       setModalTitle('Entry Submitted');
       setModalDescription('Thank you for your Entry');
       setOpen(true);

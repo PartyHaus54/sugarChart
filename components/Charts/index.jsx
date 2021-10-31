@@ -156,7 +156,10 @@ const Charts = (props) => {
   const [userInfo, setUserInfo] = useState(placeholderUser);
 
   const [editingReadings, setEditingReadings] = useState(false);
-  const [activeReading, setActiveReading] = useState({});
+
+  var activeReadingPlaceholder = {}
+  const [activeReading, setActiveReading] = useState(activeReadingPlaceholder);
+  const [activePoint, setActivePoint] = useState({ label: 'Active point here', x: 5, y: 5, size: 6, color: 'red' });
   const [open, setOpen] = useState(false);
 
 
@@ -312,7 +315,7 @@ const Charts = (props) => {
         toggleView={() => { setOpen(!open); }}
       />
       <h1>{`${timeRange} Day Readings`}</h1>
-      <Chart timeRange={timeRange} readings={readings}/>
+      <Chart timeRange={timeRange} readings={readings} activeReading={activeReading}/>
       <Dropdown
         id="timeRange"
         label="Time Range"
@@ -352,7 +355,10 @@ const Charts = (props) => {
       {
         !editingReadings
           ?
-        <DisplayReadings readings={readings} userInfo={userInfo} />
+        <DisplayReadings readings={readings}
+          userInfo={userInfo}
+          setActiveReading={setActiveReading}
+        />
           :
         <EditReadings readings={readings}
           userInfo={userInfo}
