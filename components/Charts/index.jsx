@@ -357,6 +357,7 @@ const Charts = (props) => {
           ?
         <DisplayReadings readings={readings}
           userInfo={userInfo}
+          activeReading={activeReading}
           setActiveReading={setActiveReading}
         />
           :

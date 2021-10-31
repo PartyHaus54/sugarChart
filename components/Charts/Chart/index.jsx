@@ -15,10 +15,17 @@ const StyledAxisText = styled.text`
   font-size: 24px;
 `;
 
+const StyledActivePointText = styled.text`
+  font-color: red;
+`;
+
 const Chart = ({timeRange, readings, activeReading}) => {
   const [chartWidth, setChartWidth] = useState(0);
   const [timeDataMin, setTimeDataMin] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
+  const [minReading, setMinReading] = useState(70);
+  const [maxReading, setMaxReading] = useState(99);
+  //const [yRenderDivisor, setYRenderDivisor] = useEffect(1);
   const [displayPoints, setDisplayPoints] = useState([]);
   const [displayLabels, setDisplayLabels] = useState([]);
   const [displayLines, setDisplayLines] = useState([]);
@@ -100,10 +107,10 @@ const Chart = ({timeRange, readings, activeReading}) => {
   }, [readings]);
 
   useEffect(() => {
-    if (activeReading) {
-    //updateActivePoint();
+    if (activeReading.id !== 0) {
+      updateActivePoint();
     }
-  }, [activeReading]);
+  }, [activeReading.id, timeRange]);
 
   const convertTimeDataForRender = (point, divisor) => {
     // Issue is suspected to be in time zone
@@ -176,6 +183,8 @@ const Chart = ({timeRange, readings, activeReading}) => {
           maxReading = reading.glucose_level;
         }
       });
+      setMinReading(minReading);
+      setMaxReading(maxReading);
       return readingDataRange = maxReading - minReading;
     }
 
@@ -347,25 +356,41 @@ const Chart = ({timeRange, readings, activeReading}) => {
   }
 
   const updateActivePoint = () => {
+    const findReadingDataRange = () => {
+      readings.forEach(reading => {
+        if (reading.glucose_level < minReading) {
+          minReading = reading.glucose_level;
+        }
+        if (reading.glucose_level > maxReading) {
+          maxReading = reading.glucose_level;
+        }
+      });
+      setMinReading(minReading);
+      setMaxReading(maxReading);
+      return readingDataRange = maxReading - minReading;
+    }
+
     var timestamp = new Date(`${activeReading.observed_date}T${activeReading.observed_time}`).getTime();
     var now = Date.now();
     var timeDataMin = now - (86400000 * timeRange)//  - (3600000 * timeZoneOffset);
     var timeDataMax = now;
-
     var timeDataRange = timeDataMax - timeDataMin;
     var timeRenderRange = viewWidth - viewWidth * 2 * paddingPercent;
-
     var timeDataDivisor = timeDataRange / timeRenderRange;
-
     var xRender = convertTimeDataForRender(timestamp - timeDataMin, timeDataDivisor);
 
+    var readingDataDivisor = 1;
+    var readingDataRange = findReadingDataRange();
+    var readingRenderRange = viewHeight - viewHeight * 2 * paddingPercent
 
-
+    readingDataDivisor = readingDataRange / readingRenderRange;
     var yRender = convertReadingLevelForRender(activeReading.glucose_level - minReading, readingDataDivisor);
 
     var activePoint = {
       x: xRender,
-      y: yRender
+      y: yRender,
+      label: activeReading.glucose_level,
+      color: 'red'
     }
 
     setActivePoint(activePoint);
@@ -410,10 +435,16 @@ const Chart = ({timeRange, readings, activeReading}) => {
             </g>
           ))
         }
-        <g>
-          <circle key={activePoint.id} cx={activePoint.x} cy={activePoint.y} r={activePoint.size} fill={activePoint.color} />
-          <text x={activePoint.x + activePoint.size} y={activePoint.y - activePoint.size}>{activePoint.label}</text>
-        </g>
+        {
+          activeReading.id > 0
+            ?
+          <g>
+            <circle key={activePoint.id} cx={activePoint.x} cy={activePoint.y} r={5} fill="red" />
+            <text x={activePoint.x + pointSize} y={activePoint.y - pointSize} fontWeight="bold" fill={activePoint.color}>{activePoint.label}</text>
+          </g>
+            :
+          null
+        }
       </StyledSVG>
     </div>
 )};
