@@ -70,7 +70,10 @@ class ReadingListTimeSpan(generics.ListCreateAPIView):
     days_ago = self.kwargs['days_ago']
     time_span = timedelta(days=days_ago)
     span_start = now - time_span
+    print('Gettings Readings From')
     print(span_start)
+    print('To now:')
+    print(now)
     if self.request.user.is_staff == True:
       return Reading.objects.filter(observed_datetime__gte=span_start, is_deleted=False)
     elif not self.request.user.is_anonymous:

@@ -61,7 +61,7 @@ const DashBoard = ({dash}) => {
               total += reading.glucose_level;
             });
             if (readings.length > 0) {
-              setAvgSugarLevel(total / readings.length);
+              setAvgSugarLevel(Math.ceil(total / readings.length));
             }
           });
       });
