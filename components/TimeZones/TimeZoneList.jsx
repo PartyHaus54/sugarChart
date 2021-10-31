@@ -453,7 +453,7 @@ const TimeZoneList = ({timezone, setTimeZone}) => {
     'US/Mountain',
     'US/Pacific',
     'UTC'
-  ]
+  ];
 
   return (
     <div >

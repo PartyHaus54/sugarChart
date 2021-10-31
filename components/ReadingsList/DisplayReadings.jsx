@@ -1,4 +1,9 @@
 import React from 'react';
+import styled from '@emotion/styled';
+
+const StyledTable = styled.table`
+  border: white solid 2px;s
+`;
 
 import { DateTime } from 'luxon';
 
@@ -9,7 +14,7 @@ const DisplayReadings = ({readings, userInfo, editingReadings}) => {
   }
 
   return (
-    <table>
+    <StyledTable>
       <thead>
         <tr>
           <th>Date</th>
@@ -37,7 +42,7 @@ const DisplayReadings = ({readings, userInfo, editingReadings}) => {
           </tr>
         ))}
       </tbody>
-    </table>
+    </StyledTable>
   )
 }
 

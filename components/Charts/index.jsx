@@ -6,6 +6,7 @@ import Dropdown from '../FormComponents/Dropdown';
 import Chart from './Chart';
 import DisplayReadings from '../ReadingsList/DisplayReadings.jsx';
 import EditReadings from '../ReadingsList/EditReadings.jsx';
+import EditReadingModal from '../Modal/EditReadingModal.jsx';
 
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -148,12 +149,16 @@ const Charts = (props) => {
       image: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'
     }
   };
+  const [token, setToken] = useState('');
 
   const [timeRange, setTimeRange] = useState(7);
   const [readings, setReadings] = useState([]);
   const [userInfo, setUserInfo] = useState(placeholderUser);
+
   const [editingReadings, setEditingReadings] = useState(false);
-  const [token, setToken] = useState('');
+  const [activeReading, setActiveReading] = useState({});
+  const [open, setOpen] = useState(false);
+
 
   useEffect(() => {
     getUserInfoForReadings();
@@ -187,7 +192,9 @@ const Charts = (props) => {
     })
     .then(userInfoResponse => {
       setUserInfo(userInfoResponse.data[0]);
+      console.log('user info response', userInfoResponse.data[0])
       var timespan = userInfoResponse.data[0].details.default_timespan;
+      setTimeRange(timespan);
       console.log('Default timespan', timespan);
       axios({
         method: 'get',
@@ -224,8 +231,58 @@ const Charts = (props) => {
     });
   }
 
+  const handleEditModeClick = () => {
+    setEditingReadings(!editingReadings);
+  };
+
+  const displayReadingInEdit = (reading) => {
+    setActiveReading(reading);
+    setOpen(true);
+  };
+
+  const updateReading = (date, time, glucoseLevel, weight) => {
+    axios({
+      method: 'put',
+      url: `${django.url}/api/readings/${activeReading.id}/`,
+      headers: {
+        'Accept': '*/*',
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        observed_date: date,
+        observed_time: time,
+        glucose_level: glucoseLevel,
+        weight_at_reading: weight
+      }
+    })
+    .then(() => {
+      axios({
+        method: 'get',
+        url: `${django.url}/api/readings_since/${timeRange}/`,
+        headers: {
+          'Accept': '*/*',
+          "Authorization": `Token ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(readingsResponse => {
+          setReadings(readingsResponse.data);
+          setOpen(false);
+        });
+    });
+  };
+
   return (
     <div>
+      <EditReadingModal
+        open={open}
+        activeReading={activeReading}
+        updateReading={updateReading}
+        userInfo={userInfo}
+        setOpen={setOpen}
+        toggleView={() => { setOpen(!open); }}
+      />
       <h1>{`${timeRange} Day Readings`}</h1>
       <Chart timeRange={timeRange} readings={readings}/>
       <Dropdown
@@ -258,7 +315,7 @@ const Charts = (props) => {
         control={
           <Checkbox
             checked={editingReadings}
-            onChange={() => { setEditingReadings(!editingReadings) }}
+            onChange={() => { handleEditModeClick(!editingReadings) }}
           />
         }
         label="Edit Readings"
@@ -267,9 +324,15 @@ const Charts = (props) => {
       {
         !editingReadings
           ?
-        <DisplayReadings readings={readings} userInfo={userInfo} editingReadings={editingReadings} />
+        <DisplayReadings readings={readings} userInfo={userInfo} />
           :
-        <EditReadings readings={readings} userInfo={userInfo} editingReadings={editingReadings}/>
+        <EditReadings readings={readings}
+          userInfo={userInfo}
+          displayReadingInEdit={displayReadingInEdit}
+          activeReading={activeReading}
+          setActiveReading={setActiveReading}
+          setOpen={setOpen}
+        />
       }
     </div>
 )}
