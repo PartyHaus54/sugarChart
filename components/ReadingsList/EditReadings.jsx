@@ -1,12 +1,24 @@
 import React from 'react';
 import { DateTime } from 'luxon';
+import styled from '@emotion/styled';
 
-const EditReadings = ({readings, userInfo}) => {
+const StyledTable = styled.table`
+  border: red solid 2px;s
+`;
+
+const EditReadings = ({readings, userInfo, displayReadingInEdit, setActiveReading, setOpen}) => {
+  const handleEditClick = (reading) => {
+    displayReadingInEdit(reading);
+    setActiveReading(reading);
+    setOpen(true);
+    console.log(`Modal incoming for reading ${reading}`);
+  }
+
   return (
-    <table>
+    <StyledTable>
       <thead>
         <tr>
-          <th>Date Edit</th>
+          <th>Date</th>
           <th>Time</th>
           <th>Reading</th>
           {userInfo.details.show_weight && <th>Weight</th>}
@@ -14,8 +26,8 @@ const EditReadings = ({readings, userInfo}) => {
         </tr>
       </thead>
       <tbody>
-        {readings.map((reading) => (
-          <tr key={reading.id}>
+        {readings.map(reading => (
+          <tr key={reading.id} onClick={() => { handleEditClick(reading); }} >
             <td className="date">{DateTime.fromISO(reading.observed_date).toFormat('LL-dd-yyyy')}</td>
             {
               userInfo.details.show_24_hours
@@ -30,7 +42,7 @@ const EditReadings = ({readings, userInfo}) => {
           </tr>
         ))}
       </tbody>
-    </table>
+    </StyledTable>
   )
 }
 export default EditReadings;

@@ -43,7 +43,8 @@ const DashBoard = ({dash}) => {
       }
     })
       .then(response => {
-        var defaultTimespan = response.data[0].details.id;
+        console.log(response.data[0]);
+        var defaultTimespan = response.data[0].details.default_timespan;
         axios({
           method: 'get',
           url: `${django.url}/api/readings_since/${defaultTimespan}/`,

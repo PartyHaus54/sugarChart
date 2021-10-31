@@ -70,9 +70,11 @@ const NewEntry = () => {
 
   return (
     <React.Fragment>
-      <Modal title={modalTitle} description={modalDescription} open={open} toggleView={()=>{
-        setOpen(!open);
-      }}/>
+      <Modal title={modalTitle}
+        description={modalDescription}
+        open={open}
+        toggleView={()=>{ setOpen(!open); }}
+      />
       <Box sx={{display: 'flex', flexDirection: 'column'}}>
         <label>Sugar Level</label>
         <input type="number" id="glucose_level" onChange = {(e)=>{
