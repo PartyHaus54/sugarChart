@@ -181,7 +181,6 @@ const Chart = ({timeRange, readings}) => {
 
     const convertReadingLevelForRender = (point, divisor) => {
       var renderValue = viewHeight - (point / divisor) - padding;
-      console.log(renderValue);
       return renderValue;
     }
 

@@ -48,8 +48,11 @@ class ReadingList(generics.ListCreateAPIView):
     # birth_month = int(date_of_birth)
     # birth_day = int(date_of_birth)
     # birth_date = datetime(birth_year, birth_month, birth_day)
-    age_delta = observed_date - date_of_birth
-    age = age_delta.days / 365
+    if  date_of_birth is not None:
+      age_delta = observed_date - date_of_birth
+      age = age_delta.days / 365
+    else:
+      age = None
     #print(age)
 
     serializer.save(
@@ -69,10 +72,10 @@ class ReadingListTimeSpan(generics.ListCreateAPIView):
     span_start = now - time_span
     print(span_start)
     if self.request.user.is_staff == True:
-      return Reading.objects.filter(observed_datetime__gte=span_start)
+      return Reading.objects.filter(observed_datetime__gte=span_start, is_deleted=False)
     elif not self.request.user.is_anonymous:
       user_id = self.request.user.id
-      return Reading.objects.filter(user_id=user_id, observed_datetime__gte=span_start)
+      return Reading.objects.filter(user_id=user_id, observed_datetime__gte=span_start, is_deleted=False)
     else:
       return
   serializer_class = ReadingSerializer
@@ -85,10 +88,10 @@ class ReadingDetail(generics.RetrieveUpdateDestroyAPIView):
   def get_queryset(self):
     id = self.kwargs['pk']
     if self.request.user.is_staff == True:
-      return Reading.objects.filter(id=id)
+      return Reading.objects.filter(id=id, is_deleted=False)
     elif not self.request.user.is_anonymous:
       user_id = self.request.user.id
-      return Reading.objects.filter(id=id, user_id=user_id)
+      return Reading.objects.filter(id=id, user_id=user_id, is_deleted=False)
     else:
       return
   serializer_class = ReadingSerializer
