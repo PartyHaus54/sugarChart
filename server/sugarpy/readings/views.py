@@ -101,3 +101,42 @@ class ReadingDetail(generics.RetrieveUpdateDestroyAPIView):
   permissions_classes = (
     IsAdminOrCurrentUser
   )
+
+  def perform_update(self, serializer):
+    entered_date = self.request.data["observed_date"]
+    year = int(entered_date[0:4])
+    month = int(entered_date[5:7])
+    day = int(entered_date[8:10])
+
+    # For the age calculation
+    observed_date = date(year, month, day)
+
+    entered_time = self.request.data["observed_time"]
+    hour = int(entered_time[0:2])
+    minute = int(entered_time[3:5])
+    second = 0
+
+    naive_datetime = datetime(year, month, day, hour, minute, second)
+    tz = self.request.user.details.timezone
+    tz_datetime = pytz.timezone(tz).localize(naive_datetime)
+    #print(tz_datetime)
+
+    date_of_birth = self.request.user.details.date_of_birth
+    #print(date_of_birth)
+    # birth_year = int(date_of_birth)
+    # birth_month = int(date_of_birth)
+    # birth_day = int(date_of_birth)
+    # birth_date = datetime(birth_year, birth_month, birth_day)
+    if  date_of_birth is not None:
+      age_delta = observed_date - date_of_birth
+      age = age_delta.days / 365
+    else:
+      age = None
+    #print(age)
+
+    serializer.save(
+      user_id=self.request.user.id,
+      weight_at_reading=self.request.user.details.weight,
+      age_at_reading=age,
+      observed_datetime=tz_datetime
+    )

@@ -32,6 +32,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
   const [displayRanges, setDisplayRanges] = useState([]);
   const [pointSize, setPointSize] = useState(5);
   const [activePoint, setActivePoint] = useState({x: 0, y:0});
+  const [editCount, setEditCount] = useState(0);
   const [xAxis, setXAxis] = useState({x1: 0, y1: 0, x2: 0, y2: 0, ticks: [], labels: []});
   const [yAxis, setYAxis] = useState({ x1: 0, y1: 0, x2: 0, y2: 0, ticks: [], labels: [] });
   //const [padding, setPadding] = useState(padding);
@@ -110,7 +111,10 @@ const Chart = ({timeRange, readings, activeReading}) => {
     if (activeReading.id !== 0) {
       updateActivePoint();
     }
-  }, [activeReading.id, timeRange]);
+  }, [
+    timeRange,
+    activeReading
+  ]);
 
   const convertTimeDataForRender = (point, divisor) => {
     // Issue is suspected to be in time zone
@@ -287,49 +291,64 @@ const Chart = ({timeRange, readings, activeReading}) => {
     // Let's track some midnights!
     // We don't need to track each one, just the first one and then we can iterate for n - 1 midnights
     // We can pull it out of thing air with Javascript for the data and then epoch at midnight
-    var time = new Date().toISOString().split('T')[0];
-    var localTime = new Date().getDate();
-    console.log('localTime', localTime);
-    var localOffset = Date().split(' ')[5];
-    var hoursOffset = Number(localOffset.slice(3))/100;
-    var epochMidnight = Date.parse(time) - (3600000 * hoursOffset);
-    console.log('offset:', hoursOffset)
+    var labelDate = new Date();
+    var labelText = labelDate.toISOString().split('T')[0];
+    console.log(`labelText`, labelText);
 
-    var hours = (Date.now() - epochMidnight) / 1000 / 60 / 60
+    var localOffset = Date().split(' ')[5];
+    console.log('localOffset', localOffset);
+
+    var hoursOffset = Number(localOffset.slice(3))/100;
+    console.log('hoursOffset', hoursOffset);
+
+    var epochMidnight = Date.parse(labelText) - (3600000 * hoursOffset);
+    if (epochMidnight > Date.now()) {
+      epochMidnight -= 86400000;
+    }
     console.log('EM', epochMidnight);
-    var tickOffset = 0.25
+
+    // This is a check to see how many hours it's been since local midnight. It provides an accurate difference
+    var hours = (Date.now() - epochMidnight) / 1000 / 60 / 60;
+    console.log('hours', hours);
+
+    var baseTickOffset = 12;
 
     var xTicks = [];
     var xLabels = [];
     var previousLabelRenderPosition = convertTimeDataForRender(epochMidnight - timeDataMin, timeDataDivisor);
     var firstLabelPlaced = false;
+
     while (epochMidnight > timeDataMin) {
       var tick = {
         x1: convertTimeDataForRender(epochMidnight - timeDataMin, timeDataDivisor),
         y1: viewHeight - padding,
         x2: convertTimeDataForRender(epochMidnight - timeDataMin, timeDataDivisor),
-        y2: viewHeight - padding + padding * tickOffset
+        y2: viewHeight - padding + baseTickOffset
       }
       if (!firstLabelPlaced) {
+        tick.y2 += baseTickOffset * 1.5;
         var label = {
-          x: tick.x1,
-          y: tick.y1 + padding * tickOffset * 2.5,
-          label: time
+          x: tick.x2,
+          y: tick.y2 + baseTickOffset,
+          label: labelText
         }
         xLabels.push(label);
         previousLabelRenderPosition = tick.x1;
         firstLabelPlaced = true;
-      } else if (previousLabelRenderPosition - tick.x1 > 150) {
+      } else if (previousLabelRenderPosition - tick.x1 > 125) {
+        tick.y2 += baseTickOffset * 1.5;
         var label = {
-          x: tick.x1,
-          y: tick.y1 + padding * tickOffset * 2.5,
-          label: time
+          x: tick.x2,
+          y: tick.y2 + baseTickOffset,
+          label: labelText
         }
         previousLabelRenderPosition = tick.x1;
         xLabels.push(label);
       }
       xTicks.push(tick);
       epochMidnight -= 86400000;
+      labelDate = new Date(epochMidnight);
+      labelText = labelDate.toISOString().split('T')[0];
     }
 
     var xAxisPoints = {
