@@ -2,17 +2,31 @@ import React from 'react';
 import styled from '@emotion/styled';
 
 const StyledTable = styled.table`
-  border: white solid 2px;s
+  //border: white solid 2px;
 `;
+
+var StyledTableRow = styled.tr`
+  border: white solid 2px;
+`;
+
+var StyledActiveTableRow = styled.tr`
+  border: red solid 2px;
+`;
+
+var activeRowStyle = {
+  outline: 'white solid 2px'
+}
 
 import { DateTime } from 'luxon';
 
 
-const DisplayReadings = ({readings, userInfo, editingReadings, setActiveReading}) => {
+const DisplayReadings = ({readings, userInfo, editingReadings, activeReading, setActiveReading}) => {
   const handleReadingClick = (reading) => {
     setActiveReading(reading);
     console.log(`The active reading has been set to:`, reading);
   }
+
+
 
   return (
     <StyledTable>
@@ -28,7 +42,10 @@ const DisplayReadings = ({readings, userInfo, editingReadings, setActiveReading}
       </thead>
       <tbody>
         {readings.map((reading) => (
-          <tr key={reading.id} onClick={() => {handleReadingClick(reading)}}>
+          <tr key={reading.id}
+            style={reading.id === activeReading.id ? activeRowStyle : null}
+            onClick={() => {handleReadingClick(reading)}}
+          >
             <td className="date">{DateTime.fromISO(reading.observed_date).toFormat('LL-dd-yyyy')}</td>
             {
               userInfo.details.show_24_hours
