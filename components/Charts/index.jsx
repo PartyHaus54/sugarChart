@@ -149,6 +149,17 @@ const Charts = (props) => {
       image: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'
     }
   };
+
+  const placeholderReading = {
+    "id": 0,
+    "observed_time": "16:15:00",
+    "observed_date": "2021-09-18",
+    "entered_time": "2021-09-18T23:15:28.307946Z",
+    "glucose_level": 100,
+    "age_at_reading": 0,
+    "weight_at_reading": 0
+  }
+
   const [token, setToken] = useState('');
 
   const [timeRange, setTimeRange] = useState(7);
@@ -238,6 +249,14 @@ const Charts = (props) => {
   const handleEditModeClick = () => {
     setEditingReadings(!editingReadings);
   };
+
+  const updateActiveReading = (reading) => {
+    if (reading.id !== activeReading.id) {
+      setActiveReading(reading);
+    } else {
+      setActiveReading(placeholderReading);
+    }
+  }
 
   const displayReadingInEdit = (reading) => {
     setActiveReading(reading);
@@ -362,7 +381,7 @@ const Charts = (props) => {
         <DisplayReadings readings={readings}
           userInfo={userInfo}
           activeReading={activeReading}
-          setActiveReading={setActiveReading}
+          updateActiveReading={updateActiveReading}
         />
           :
         <EditReadings readings={readings}

@@ -2,7 +2,8 @@ import React from 'react';
 import styled from '@emotion/styled';
 
 const StyledTable = styled.table`
-  //border: white solid 2px;
+  width: 100%;
+  text-align: center;
 `;
 
 var StyledTableRow = styled.tr`
@@ -20,9 +21,9 @@ var activeRowStyle = {
 import { DateTime } from 'luxon';
 
 
-const DisplayReadings = ({readings, userInfo, editingReadings, activeReading, setActiveReading}) => {
+const DisplayReadings = ({readings, userInfo, editingReadings, activeReading, updateActiveReading}) => {
   const handleReadingClick = (reading) => {
-    setActiveReading(reading);
+    updateActiveReading(reading);
     console.log(`The active reading has been set to:`, reading);
   }
 

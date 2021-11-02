@@ -29,6 +29,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
   const [displayPoints, setDisplayPoints] = useState([]);
   const [displayLabels, setDisplayLabels] = useState([]);
   const [displayLines, setDisplayLines] = useState([]);
+  const [displayPaths, setDisplayPaths] = useState([]);
   const [displayRanges, setDisplayRanges] = useState([]);
   const [pointSize, setPointSize] = useState(5);
   const [activePoint, setActivePoint] = useState({x: 0, y:0});
@@ -99,7 +100,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
       label: 'Hypo-glycemia',
       rangeMin: 0,
       rangeMax: 69,
-      color: 'rgba(255,0,0,.2)'
+      color: 'rgba(255,0,0, 0.2)'
     }
   ];
 
@@ -109,7 +110,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
 
   useEffect(() => {
     if (activeReading.id !== 0) {
-      updateActivePoint();
+      //updateActivePoint();
     }
   }, [
     timeRange,
@@ -195,10 +196,11 @@ const Chart = ({timeRange, readings, activeReading}) => {
     var readingDataDivisor = 1;
     var points = [];
     var lines = [];
+    var paths = [];
 
     var healthyRange = glucoseLevelRanges[2];
-    var minReading = healthyRange.rangeMin;
-    var maxReading = healthyRange.rangeMax;
+    var minReading = healthyRange.rangeMin - 0.5;
+    var maxReading = healthyRange.rangeMax + 0.5;
 
     var readingDataRange = findReadingDataRange();
     var readingRenderRange = viewHeight - viewHeight * 2 * paddingPercent
@@ -251,6 +253,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
 
       if (!labelOverlap) {
         labelPreppedForRender.push({
+          id: reading.id,
           x: xRender,
           y: yRender,
           label: reading.glucose_level
@@ -267,7 +270,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
         label: reading.glucose_level
       };
 
-      // Lines
+      // Lines and paths
       if (points.length > 0) {
         var line = {
           id: index,
@@ -277,12 +280,21 @@ const Chart = ({timeRange, readings, activeReading}) => {
           y2: yRender
         }
         lines.push(line);
+
+        var controlX = (points[index - 1].x + xRender) / 2;
+
+        var path = {
+          id: index,
+          path: `M ${points[index - 1].x} ${points[index - 1].y} C ${controlX} ${points[index - 1].y}, ${controlX} ${yRender}, ${xRender} ${yRender}`
+        }
+        paths.push(path);
       }
       points.push(coordinate);
     });
     setDisplayRanges(displayRanges);
     setDisplayPoints(points);
     setDisplayLines(lines);
+    setDisplayPaths(paths);
 
     // Axis should be able to utilize the above functions smoothly
     // Finding y axis is just (padding, height - padding) <=> (width - padding, height - padding)
@@ -374,51 +386,51 @@ const Chart = ({timeRange, readings, activeReading}) => {
     setYAxis(yAxisPoints);
   }
 
-  const updateActivePoint = () => {
-    const findReadingDataRange = () => {
-      readings.forEach(reading => {
-        if (reading.glucose_level < minReading) {
-          minReading = reading.glucose_level;
-        }
-        if (reading.glucose_level > maxReading) {
-          maxReading = reading.glucose_level;
-        }
-      });
-      setMinReading(minReading);
-      setMaxReading(maxReading);
-      return readingDataRange = maxReading - minReading;
-    }
+  // const updateActivePoint = () => {
+  //   const findReadingDataRange = () => {
+  //     readings.forEach(reading => {
+  //       if (reading.glucose_level < minReading) {
+  //         minReading = reading.glucose_level;
+  //       }
+  //       if (reading.glucose_level > maxReading) {
+  //         maxReading = reading.glucose_level;
+  //       }
+  //     });
+  //     setMinReading(minReading);
+  //     setMaxReading(maxReading);
+  //     return readingDataRange = maxReading - minReading;
+  //   }
 
-    var timestamp = new Date(`${activeReading.observed_date}T${activeReading.observed_time}`).getTime();
-    var now = Date.now();
-    var timeDataMin = now - (86400000 * timeRange)//  - (3600000 * timeZoneOffset);
-    var timeDataMax = now;
-    var timeDataRange = timeDataMax - timeDataMin;
-    var timeRenderRange = viewWidth - viewWidth * 2 * paddingPercent;
-    var timeDataDivisor = timeDataRange / timeRenderRange;
-    var xRender = convertTimeDataForRender(timestamp - timeDataMin, timeDataDivisor);
+  //   var timestamp = new Date(`${activeReading.observed_date}T${activeReading.observed_time}`).getTime();
+  //   var now = Date.now();
+  //   var timeDataMin = now - (86400000 * timeRange)//  - (3600000 * timeZoneOffset);
+  //   var timeDataMax = now;
+  //   var timeDataRange = timeDataMax - timeDataMin;
+  //   var timeRenderRange = viewWidth - viewWidth * 2 * paddingPercent;
+  //   var timeDataDivisor = timeDataRange / timeRenderRange;
+  //   var xRender = convertTimeDataForRender(timestamp - timeDataMin, timeDataDivisor);
 
-    var readingDataDivisor = 1;
-    var readingDataRange = findReadingDataRange();
-    var readingRenderRange = viewHeight - viewHeight * 2 * paddingPercent
+  //   var readingDataDivisor = 1;
+  //   var readingDataRange = findReadingDataRange();
+  //   var readingRenderRange = viewHeight - viewHeight * 2 * paddingPercent
 
-    readingDataDivisor = readingDataRange / readingRenderRange;
-    var yRender = convertReadingLevelForRender(activeReading.glucose_level - minReading, readingDataDivisor);
+  //   readingDataDivisor = readingDataRange / readingRenderRange;
+  //   var yRender = convertReadingLevelForRender(activeReading.glucose_level - minReading, readingDataDivisor);
 
-    var activePoint = {
-      x: xRender,
-      y: yRender,
-      label: activeReading.glucose_level,
-      color: 'red'
-    }
+  //   var activePoint = {
+  //     x: xRender,
+  //     y: yRender,
+  //     label: activeReading.glucose_level,
+  //     color: 'red'
+  //   }
 
-    setActivePoint(activePoint);
-  }
+  //   setActivePoint(activePoint);
+  // }
 
   return (
     <div id="chart-container">
       <StyledSVG width={chartWidth} height={chartHeight} viewBox={`0 0 ${viewWidth} ${viewHeight}`} className="chart">
-        <line x1={xAxis.x1} y1={xAxis.y1} x2={xAxis.x2} y2={xAxis.y2} stroke="black" />
+        <line x1={xAxis.x1} y1={xAxis.y1} x2={xAxis.x2} y2={xAxis.y2} stroke="black" strokeWidth={3}/>
         {
           xAxis.ticks.map((tick, key) =>
             <line key={key} x1={tick.x1} y1={tick.y1} x2={tick.x2} y2={tick.y2} stroke="black" />
@@ -429,41 +441,56 @@ const Chart = ({timeRange, readings, activeReading}) => {
             <StyledAxisText x={label.x} y={label.y} textAnchor='middle' >{label.label}</StyledAxisText>
           ))
         }
-        <line x1={yAxis.x1} y1={yAxis.y1} x2={yAxis.x2} y2={yAxis.y2} stroke="black" />
+        <line x1={yAxis.x1} y1={yAxis.y1} x2={yAxis.x2} y2={yAxis.y2} stroke="black" strokeWidth={3} />
         {
           displayRanges.map(range => (
             <rect key={range.id} x="0" y={range.y} width={viewWidth} height={range.height} fill={range.color} />
           ))
         }
-        {
+        {/* {
           displayLines.map(line => (
-            <line key={line.id} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2} stroke="gray"/>
+            <line key={line.id} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2} strokeWidth="3" stroke="gray"/>
+          ))
+        } */}
+        {
+          displayPaths.map(path => (
+            <path key={path.id} d={path.path} strokeWidth="3" stroke="gray" fill="transparent"/>
           ))
         }
         {
           displayPoints.map(point => (
             <g>
-              <circle key={point.id} cx={point.x} cy={point.y} r={pointSize}/>
+              <circle key={point.id} cx={point.x} cy={point.y} r={pointSize} fill={point.id === activeReading.id ? 'red' : 'black'} />
             </g>
           ))
         }
         {
           displayLabels.map(point => (
             <g>
-              <text x={point.x + pointSize} y={point.y - pointSize}>{point.label}</text>
+              <text x={point.x + pointSize} y={point.y - pointSize}
+                fontSize={21}
+                fill={point.id === activeReading.id ? 'red' : 'black'}
+              >
+                {point.label}
+              </text>
             </g>
           ))
         }
-        {
+        {/* {
           activeReading.id > 0
             ?
           <g>
             <circle key={activePoint.id} cx={activePoint.x} cy={activePoint.y} r={5} fill="red" />
-            <text x={activePoint.x + pointSize} y={activePoint.y - pointSize} fontWeight="bold" fill={activePoint.color}>{activePoint.label}</text>
+            <text x={activePoint.x + pointSize} y={activePoint.y - pointSize}
+              fontSize={21} fontWeight="bold"
+              fill={activePoint.color}
+            >
+              {activePoint.label}
+            </text>
           </g>
             :
           null
-        }
+        } */}
       </StyledSVG>
     </div>
 )};

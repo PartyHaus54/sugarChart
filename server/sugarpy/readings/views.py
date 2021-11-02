@@ -127,7 +127,7 @@ class ReadingDetail(generics.RetrieveUpdateDestroyAPIView):
     # birth_month = int(date_of_birth)
     # birth_day = int(date_of_birth)
     # birth_date = datetime(birth_year, birth_month, birth_day)
-    if  date_of_birth is not None:
+    if date_of_birth is not None:
       age_delta = observed_date - date_of_birth
       age = age_delta.days / 365
     else:
