@@ -52,6 +52,7 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
 
   useEffect(() => {
     var time = new Date(`${activeReading.observed_date}T${activeReading.observed_time}`);
+    console.log(time);
     setReadingTime(time);
     setReadingDate(activeReading.observed_date);
     var time = new Date
@@ -64,9 +65,16 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
   };
 
   const handleSaveClick = () => {
-    var strippedReadingTime= readingTime.toISOString().slice(11, 19);
-    console.log('StrippedReadingTime', strippedReadingTime);
-    updateReading(readingDate, strippedReadingTime, readingLevel, readingWeight);
+    var epochReadingTime = Date.parse(readingTime);
+    console.log('Reading Time preparse', readingTime);
+    var epochDifference = readingTime.getTimezoneOffset() * 60 * 1000;
+    epochReadingTime -= epochDifference;
+    var observedTime = new Date(epochReadingTime).toISOString().slice(11,19);
+    console.log('Observed Time:', observedTime);
+    //console.log('Reading Time', readingTime.toISOString());
+    // var timeZoneOffset = Number(readingTime.toISOString().slice(20));
+    // console.log('StrippedReadingTime', strippedReadingTime);
+    updateReading(readingDate, observedTime, readingLevel, readingWeight);
   };
 
   const handleDeleteClick = () => {
