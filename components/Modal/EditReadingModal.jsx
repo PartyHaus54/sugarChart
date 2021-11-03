@@ -64,10 +64,9 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
   };
 
   const handleSaveClick = () => {
-    var hours = readingTime.getHours();
-    var minutes = readingTime.getMinutes();
-    var strippedReatingTime= `${hours}:${minutes}:00`;
-    updateReading(readingDate, strippedReatingTime, readingLevel, readingWeight);
+    var strippedReadingTime= readingTime.toISOString().slice(11, 19);
+    console.log('StrippedReadingTime', strippedReadingTime);
+    updateReading(readingDate, strippedReadingTime, readingLevel, readingWeight);
   };
 
   const handleDeleteClick = () => {
@@ -76,7 +75,6 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
   };
 
   return (
-    <div>
       <Modal
         open={open}
         onClose={toggleView}
@@ -240,7 +238,6 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
           </StyledModalHeaderFooterDiv>
         </Box>
       </Modal>
-    </div>
   );
 }
 

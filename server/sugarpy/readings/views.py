@@ -112,6 +112,8 @@ class ReadingDetail(generics.RetrieveUpdateDestroyAPIView):
     observed_date = date(year, month, day)
 
     entered_time = self.request.data["observed_time"]
+    print('entered time:')
+    print(entered_time)
     hour = int(entered_time[0:2])
     minute = int(entered_time[3:5])
     second = 0

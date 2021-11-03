@@ -23,4 +23,4 @@ class Reading(models.Model):
   is_deleted = models.BooleanField(default=False)
 
   class Meta:
-    ordering = ['observed_date', 'observed_time']
+    ordering = ['-observed_datetime']
