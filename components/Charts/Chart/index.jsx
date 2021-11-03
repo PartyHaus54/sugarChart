@@ -9,7 +9,9 @@ const StyledDiv = styled.div`
 
 const StyledSVG = styled.svg`
   background-color: white;
-`;
+  margin-top: 16px;
+  `;
+  //margin-bottom: 5px;
 
 const StyledAxisText = styled.text`
   font-size: 24px;
@@ -260,7 +262,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
         });
       }
 
-      setDisplayLabels(labelPreppedForRender);
+
 
       // Points
       var coordinate = {
@@ -293,6 +295,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
     });
     setDisplayRanges(displayRanges);
     setDisplayPoints(points);
+    setDisplayLabels(labelPreppedForRender);
     setDisplayLines(lines);
     setDisplayPaths(paths);
 
@@ -491,6 +494,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
             :
           null
         } */}
+        { displayPoints.length === 0 && <text x={viewWidth / 2} y={viewHeight / 2} textAnchor='middle' >No Data For Time Range</text> }
       </StyledSVG>
     </div>
 )};

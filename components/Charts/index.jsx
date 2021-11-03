@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react';
 import django from '../../utils/django.js';
 import axios from 'axios';
 
+import TimeRangeSelect from '../ReadingsList/TimeRangeSelect.jsx';
+
 import Dropdown from '../FormComponents/Dropdown';
 import Chart from './Chart';
 import DisplayReadings from '../ReadingsList/DisplayReadings.jsx';
@@ -13,6 +15,12 @@ import Container from '@mui/material/Container';
 
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+
+import styled from '@emotion/styled';
+
+const StyledSettingsBar = styled.div`
+  display: flex;
+`;
 
 const sampleData = [
   {
@@ -334,47 +342,53 @@ const Charts = (props) => {
         setOpen={setOpen}
         toggleView={() => { setOpen(!open); }}
       />
-      <h1>{`${timeRange} Day Readings`}</h1>
+      {/* <h1>{`${timeRange} Day Readings`}</h1> */}
       <Chart timeRange={timeRange}
         readings={readings}
         activeReading={activeReading}
       />
-      <Dropdown
-        id="timeRange"
-        label="Time Range"
-        options={[
-          {text: 'day',
-          numOfDays: 1},
-          {text: 'week',
-          numOfDays: 7},
-          {text: 'month',
-          numOfDays: 30},
-          {text: '3 months',
-          numOfDays: 90},
-          {text: '6 months',
-          numOfDays: 180},
-          {text: 'year',
-          numOfDays: 365},
-          {text: 'total',
-          numOfDays: 0}
-        ]}
-        handleChange={(days) => {
-          console.log('days', days);
-          changeHandler(days);
-        }}
-      />
-      <FormControlLabel
-        value={editingReadings}
-        variant="filled"
-        control={
-          <Checkbox
-            checked={editingReadings}
-            onChange={() => { handleEditModeClick(!editingReadings) }}
-          />
-        }
-        label="Edit Readings"
-        labelPlacement="start"
-      />
+      <StyledSettingsBar>
+        <TimeRangeSelect timeRange={timeRange}/>
+        {/* <Dropdown
+          id="timeRange"
+          label="Time Range"
+          value={timeRange}
+          sx={{width: 0}}
+          options={[
+            {text: '1 Day',
+            numOfDays: 1},
+            {text: '1 Week',
+            numOfDays: 7},
+            {text: '1 Month',
+            numOfDays: 30},
+            {text: '3 Months',
+            numOfDays: 90},
+            {text: '6 Months',
+            numOfDays: 180},
+            {text: 'Year',
+            numOfDays: 365},
+            {text: 'Total',
+            numOfDays: 0}
+          ]}
+          handleChange={(days) => {
+            console.log('days', days);
+            changeHandler(days);
+          }}
+        /> */}
+        <FormControlLabel
+          value={editingReadings}
+          variant="filled"
+          sx={{textAlign: 'right'}}
+          control={
+            <Checkbox
+              checked={editingReadings}
+              onChange={() => { handleEditModeClick(!editingReadings) }}
+            />
+          }
+          label="Edit Readings"
+          labelPlacement="start"
+        />
+      </StyledSettingsBar>
       {
         !editingReadings
           ?

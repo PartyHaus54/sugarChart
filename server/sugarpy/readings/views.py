@@ -136,7 +136,7 @@ class ReadingDetail(generics.RetrieveUpdateDestroyAPIView):
 
     serializer.save(
       user_id=self.request.user.id,
-      weight_at_reading=self.request.user.details.weight,
+      #weight_at_reading=self.request.user.details.weight,
       age_at_reading=age,
       observed_datetime=tz_datetime
     )
