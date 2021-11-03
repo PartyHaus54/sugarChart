@@ -3,7 +3,9 @@ import { DateTime } from 'luxon';
 import styled from '@emotion/styled';
 
 const StyledTable = styled.table`
-  border: red solid 2px;s
+  border: red solid 2px;
+  width: 100%;
+  text-align: center;
 `;
 
 const EditReadings = ({readings, userInfo, displayReadingInEdit, setActiveReading, setOpen}) => {
