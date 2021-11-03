@@ -20,6 +20,7 @@ import styled from '@emotion/styled';
 
 const StyledSettingsBar = styled.div`
   display: flex;
+
 `;
 
 const sampleData = [
@@ -235,7 +236,7 @@ const Charts = (props) => {
     });
   }
 
-  const changeHandler = (days) => {
+  const updateTimeSpan = (days) => {
     //TODO:
     //GET users readings for timeRange
     //display chart with users readings for timeRange
@@ -348,7 +349,7 @@ const Charts = (props) => {
         activeReading={activeReading}
       />
       <StyledSettingsBar>
-        <TimeRangeSelect timeRange={timeRange}/>
+        <TimeRangeSelect timeRange={timeRange} updateTimeSpan={updateTimeSpan} />
         {/* <Dropdown
           id="timeRange"
           label="Time Range"
@@ -385,7 +386,7 @@ const Charts = (props) => {
               onChange={() => { handleEditModeClick(!editingReadings) }}
             />
           }
-          label="Edit Readings"
+          label="Edit"
           labelPlacement="start"
         />
       </StyledSettingsBar>
