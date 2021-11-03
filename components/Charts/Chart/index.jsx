@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import styled from '@emotion/styled';
+import { DateTime } from 'luxon';
 
 const StyledDiv = styled.div`
   height: 50rem;
@@ -308,6 +309,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
     // We can pull it out of thing air with Javascript for the data and then epoch at midnight
     var labelDate = new Date();
     var labelText = labelDate.toISOString().split('T')[0];
+
     console.log(`labelText`, labelText);
 
     var localOffset = Date().split(' ')[5];
@@ -355,7 +357,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
         var label = {
           x: tick.x2,
           y: tick.y2 + baseTickOffset,
-          label: labelText
+          label: DateTime.fromISO(labelText).toFormat('LL-dd-yyyy')
         }
         previousLabelRenderPosition = tick.x1;
         xLabels.push(label);

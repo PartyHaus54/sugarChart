@@ -7,9 +7,11 @@ import MenuItem from '@mui/material/MenuItem';
 
 import FormHelperText from '@mui/material/FormHelperText';
 
-const TimeRangeSelect = ({timeRange}) => {
+const TimeRangeSelect = ({timeRange, updateTimeSpan}) => {
+
   const handleChange = (e) => {
-    console.log(e.target.value);
+    updateTimeSpan(e.target.value);
+    //console.log(e.target.value);
   }
 
   const timespans = [
@@ -42,13 +44,15 @@ const TimeRangeSelect = ({timeRange}) => {
       numOfDays: 0
     }
   ]
+
   return (
-      <TextField
-        id="time-range-select"
-        select
+    <FormControl variant="filled" fullWidth>
+      <InputLabel id="timespan-select-label">Time Span</InputLabel>
+      <Select
+        id="timespan-select"
         fullWidth
         defaultValue={timeRange}
-        variant="filled"
+        value={timeRange}
         label="Time Range"
         onChange={(e) => {handleChange(e)}}
       >
@@ -57,7 +61,8 @@ const TimeRangeSelect = ({timeRange}) => {
             <MenuItem key={key} value={option.numOfDays}>{option.text}</MenuItem>
           )
         }
-      </TextField>
+      </Select>
+    </FormControl>
   )
 }
 

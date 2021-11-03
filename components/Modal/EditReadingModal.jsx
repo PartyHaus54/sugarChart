@@ -8,9 +8,15 @@ import Checkbox from '@mui/material/Checkbox';
 
 import styled from '@emotion/styled';
 
+import TextField from '@material-ui/core/TextField';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
+import MobileTimePicker from '@mui/lab/MobileTimePicker';
+
 const style = {
   position: 'absolute',
-  top: '50%',
+  bottom: 0,
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: '75%',
@@ -18,6 +24,20 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
+
+const modalRowTypographyStyle = {
+  width: '40%'
+}
+
+const StyledModalHeaderFooterDiv = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const StyledModalRowDiv = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+`;
 
 const StyledHintDiv = styled.a`
   color: lightgray;
@@ -31,8 +51,10 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
   const [deleteLocked, setDeleteLocked] = useState(true);
 
   useEffect(() => {
-    setReadingTime(activeReading.observed_time);
+    var time = new Date(`${activeReading.observed_date}T${activeReading.observed_time}`);
+    setReadingTime(time);
     setReadingDate(activeReading.observed_date);
+    var time = new Date
     setReadingLevel(activeReading.glucose_level);
     setReadingWeight(activeReading.weight_at_reading);
   }, [activeReading]);
@@ -42,7 +64,10 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
   };
 
   const handleSaveClick = () => {
-    updateReading(readingDate, readingTime, readingLevel, readingWeight);
+    var hours = readingTime.getHours();
+    var minutes = readingTime.getMinutes();
+    var strippedReatingTime= `${hours}:${minutes}:00`;
+    updateReading(readingDate, strippedReatingTime, readingLevel, readingWeight);
   };
 
   const handleDeleteClick = () => {
@@ -59,8 +84,11 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Editing Reading: <Button
+          <StyledModalHeaderFooterDiv>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Editing Reading:
+            </Typography>
+            <Button
               variant='outlined'
               color='inherit'
               onClick={e => {
@@ -70,9 +98,28 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
             >
               Cancel
             </Button>
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Date:
+          </StyledModalHeaderFooterDiv>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <MobileDatePicker
+              label="Date"
+              value={readingDate}
+              onChange={(newDate) => {
+                setReadingDate(newDate);
+              }}
+              renderInput={(params) =>
+                <TextField {...params}
+                  fullWidth
+                  variant="filled"
+                />
+              }
+            />
+          </LocalizationProvider>
+          {/* <StyledModalRowDiv>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}
+              style={modalRowTypographyStyle}
+            >
+              Date:
+            </Typography>
             <input id="observed_date"
               type="date"
               value={readingDate}
@@ -80,9 +127,27 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
                 setReadingDate(e.target.value);
               }}
             />
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Time:
+          </StyledModalRowDiv> */}
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <MobileTimePicker
+                label="Time"
+                //defaultValue={readingTime}
+                value={readingTime}
+                onChange={(newTime) => {
+                  setReadingTime(newTime);
+                }}
+                renderInput={(params) =>
+                  <TextField {...params}
+                    fullWidth
+                    variant="filled"
+                  />
+                }
+              />
+          </LocalizationProvider>
+          {/* <StyledModalRowDiv>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              Time:
+            </Typography>
             <input id="observed_time"
               type="time"
               value={readingTime}
@@ -90,52 +155,78 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
                 setReadingTime(e.target.value);
               }}
             />
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Sugar Level:
-            <input id="reading-level"
-              type="number"
-              value={readingLevel}
-              onChange={(e) => {
-                setReadingLevel(Number(e.target.value));
-              }}
-            />
-          </Typography>
+          </StyledModalRowDiv> */}
+          <TextField
+            id="glucose-level"
+            label="Glucose Level"
+            type="number"
+            variant="filled"
+            fullWidth
+            defaultValue={readingLevel}
+            onChange={(e) => {
+              setReadingLevel(e.target.value);
+            }}
+          />
+          {/* // <StyledModalRowDiv>
+          //   <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          //     Sugar Level:
+          //   </Typography>
+          //   <input id="reading-level"
+          //     type="number"
+          //     value={String(readingLevel)}
+          //     onChange={(e) => {
+          //       setReadingLevel(Number(e.target.value));
+          //     }}
+          //   />
+          // </StyledModalRowDiv> */}
+
           {
             userInfo.details.show_weight &&
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Weight at Reading:
-              <input id="reading-weight"
-                type="number"
-                value={readingWeight}
-                onChange={(e) => {
-                  setReadingWeight(Number(e.target.value));
-                }}
-              />
-            </Typography>
+            <TextField
+              id="reading-weight"
+              label="Weight at Reading"
+              type="number"
+              variant="filled"
+              fullWidth
+              defaultValue={readingWeight}
+              onChange={(e) => {
+                setReadingWeight(e.target.value);
+              }}
+            />
           }
           {
             userInfo.details.show_age &&
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Age: {activeReading.age_at_reading} <StyledHintDiv>(Update DOB In Profile)</StyledHintDiv>
-            </Typography>
-          }
-          <div>
-            <Button
-              disabled={deleteLocked}
-              color='error'
-              variant='contained'
-              onClick={e => {
-                e.preventDefault();
-                handleDeleteClick();
-              }}
-            >
-              Delete
-            </Button>
-            <Checkbox
-              checked={!deleteLocked}
-              onChange={() => { setDeleteLocked(!deleteLocked); }}
+            <TextField
+              id="age-at-reading"
+              label="Age (Update Date of Birth In Profile)"
+              type="number"
+              variant="filled"
+              fullWidth
+              defaultValue={activeReading.age_at_reading}
+              disabled
             />
+            // <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+            //   Age: {activeReading.age_at_reading} <StyledHintDiv>(Update DOB In Profile)</StyledHintDiv>
+            // </Typography>
+          }
+          <StyledModalHeaderFooterDiv>
+            <div>
+              <Button
+                disabled={deleteLocked}
+                color='error'
+                variant='contained'
+                onClick={e => {
+                  e.preventDefault();
+                  handleDeleteClick();
+                }}
+              >
+                Delete
+              </Button>
+              <Checkbox
+                checked={!deleteLocked}
+                onChange={() => { setDeleteLocked(!deleteLocked); }}
+              />
+            </div>
             <Button
               color='success'
               variant='contained'
@@ -146,7 +237,7 @@ const EditReadingModal = ({activeReading, updateReading, deleteReading, userInfo
             >
               Save
             </Button>
-          </div>
+          </StyledModalHeaderFooterDiv>
         </Box>
       </Modal>
     </div>

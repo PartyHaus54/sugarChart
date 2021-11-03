@@ -16,7 +16,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DatePicker from '@mui/lab/DatePicker';
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
@@ -25,11 +25,18 @@ const StyledSignUpDiv = styled.div`
 
 const EditUser = (props) => {
   const [editingPassword, setEditingPassword] = useState(false);
+  const [dateOfBirth, setDateOfBirth] = useState(props.userInfo.details.date_of_birth)
   const [showWeight, setShowWeight] = useState(props.userInfo.details.show_weight);
   const [showAge, setShowAge] = useState(props.userInfo.details.show_age);
   const [show24Hours, setShow24Hours] = useState(props.userInfo.details.show_24_hours);
 
   const router = useRouter();
+
+  const handleDOBChange = (date) => {
+    var newDate = date;
+    setDateOfBirth(newDate);
+    props.setDateOfBirth(newDate);
+  }
 
   const handleAgePreferenceChange = () => {
     var updatedShowAge = !showAge;
@@ -64,24 +71,20 @@ const EditUser = (props) => {
         <p>{props.userInfo.username}</p>
       </div>
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DatePicker
+          <MobileDatePicker
             label="Date of Birth"
-            value={props.userInfo.details.date_of_birth}
-            displayEmpty
-            onChange={(e) => {
-              props.setDateOfBirth(e.target.value);
+
+            //defaultValue={props.userInfo.details.date_of_birth}
+            value={dateOfBirth}
+            onChange={(date) => {
+              handleDOBChange(date);
             }}
-            renderInput={() => <TextField
-              id='date-of-birth'
-              label='Date of Birth'
-              type='date'
-              variant='filled'
-              fullWidth
-              defaultValue={props.userInfo.details.date_of_birth}
-              onChange={(e) => {
-                props.setDateOfBirth(e.target.value);
-              }}
-            />}
+            renderInput={(params) =>
+              <TextField {...params}
+                fullWidth
+                variant="filled"
+              />
+            }
           />
         </LocalizationProvider>
         <TextField
