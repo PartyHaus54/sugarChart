@@ -58,7 +58,13 @@ const TimeRangeSelect = ({timeRange, updateTimeSpan}) => {
       >
         {
           timespans.map((option, key) =>
-            <MenuItem key={key} value={option.numOfDays}>{option.text}</MenuItem>
+            <MenuItem
+              key={key}
+              fullWidth
+              value={option.numOfDays}
+            >
+              {option.text}
+            </MenuItem>
           )
         }
       </Select>
