@@ -14,7 +14,6 @@ const Menu = () => {
   return (
     <Box sx={{display: 'flex', flexDirection: 'column'}}>
       <DashBoard dash={100}/>
-
       <GraphicButton
         content={<AssessmentIcon/>}
         clickHandler={(e)=>{

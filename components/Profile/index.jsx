@@ -41,6 +41,10 @@ const Profile = ({}) => {
   const router = useRouter();
 
   useEffect(() => {
+    getUserInfo();
+  }, []);
+
+  useEffect(() => {
     var token = django.tokenLoader();
     setToken(token);
   }, []);
@@ -99,17 +103,30 @@ const Profile = ({}) => {
     setDisplayMode(mode);
   }
 
-  useEffect(() => {
-    getUserInfo();
-  }, []);
+  const logout = () => {
+    axios({
+      method: 'post',
+      url: `${django.url}/user/logout/`,
+      headers: {
+        'Accept': '*/*',
+        'Authorization': `Token ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((res) => {
+      console.log(res);
+    });
+    router.push('/');
+  }
 
   return (
-    <div>
+    <React.Fragment>
       {
         displayMode
           ?
         <DisplayUser userInfo={userInfo}
           toggleDisplayMode={toggleDisplayMode}
+          logout={logout}
         />
           :
         <EditUser userInfo={userInfo}
@@ -126,7 +143,7 @@ const Profile = ({}) => {
           toggleDisplayMode={toggleDisplayMode}
         />
       }
-    </div>
+    </React.Fragment>
   )
 }
 

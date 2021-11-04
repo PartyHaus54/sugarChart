@@ -1,11 +1,21 @@
 from django.contrib.auth.models import User
 from rest_framework import routers, serializers, viewsets
 from rest_framework import generics, permissions, renderers
-from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAdminUser
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from user_details.models import UserDetail as UserDetailModel
 from user_details.serializers import UserDetailSerializer, UserSerializer, RegisterUserSerializer
 from user_details.permissions import IsAdminOrCurrentUser
+
+class Logout(APIView):
+  def post(self, request):
+    return self.delete_auth_token(request)
+
+  def delete_auth_token(self, request):
+    request.user.auth_token.delete()
+    return Response('User logged out successfully?')
 
 class NewUser(generics.ListCreateAPIView):
   def get_queryset(self):

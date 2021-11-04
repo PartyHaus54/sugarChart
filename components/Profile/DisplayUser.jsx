@@ -1,11 +1,27 @@
 import React, { useState, useEffect } from 'react';
 
 import styles from '../../styles/Profile.module.css';
+import styled from '@emotion/styled';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-const DisplayUser = ({userInfo, toggleDisplayMode}) => {
+import Button from '@material-ui/core/Button';
+
+const StyledProfileDiv = styled.div`
+`;
+
+const StyledSaveCancelRowDiv = styled.div`
+  top: 200px;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const DisplayUser = ({userInfo, toggleDisplayMode, logout}) => {
+  const handleLogoutClick = () => {
+    logout();
+  }
+
   return (
-    <div>
+    <StyledProfileDiv>
       <div className={styles.profileContainer}>
         {
           userInfo.image
@@ -14,12 +30,28 @@ const DisplayUser = ({userInfo, toggleDisplayMode}) => {
             :
           <AccountCircleIcon className={styles.accountIcon} />
         }
-        <p>{userInfo.username}</p>
-        <p>DOB: {userInfo.details.date_of_birth}</p>
-        <p>Weight: {userInfo.details.weight}</p>
+        <h1>{userInfo.username}</h1>
+        <h3>DOB: {userInfo.details.date_of_birth}</h3>
+        <h3>Weight: {userInfo.details.weight}</h3>
       </div>
-      <button onClick={() => { toggleDisplayMode() }}>Edit Profile</button>
-    </div>
+      <StyledSaveCancelRowDiv>
+        <Button
+          variant='contained'
+          onClick={() => { toggleDisplayMode() }}
+        >
+          Edit
+        </Button>
+        <Button
+          variant='contained'
+          onClick={(e) => {
+            e.preventDefault();
+            handleLogoutClick();
+          }}
+        >
+          Logout
+        </Button>
+      </StyledSaveCancelRowDiv>
+    </StyledProfileDiv>
   )
 }
 
