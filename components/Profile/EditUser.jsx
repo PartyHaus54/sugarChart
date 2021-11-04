@@ -68,74 +68,74 @@ const EditUser = (props) => {
           props.userInfo.image ? <img className={styles.profileImage} src={props.userInfo.image}></img> :
             <AccountCircleIcon className={styles.accountIcon} />
         }
-        <p>{props.userInfo.username}</p>
+        <h1>{props.userInfo.username}</h1>
       </div>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <MobileDatePicker
-            label="Date of Birth"
-
-            //defaultValue={props.userInfo.details.date_of_birth}
-            value={dateOfBirth}
-            onChange={(date) => {
-              handleDOBChange(date);
-            }}
-            renderInput={(params) =>
-              <TextField {...params}
-                fullWidth
-                variant="filled"
-              />
-            }
-          />
-        </LocalizationProvider>
-        <TextField
-          id='weight'
-          label='Weight'
-          type='number'
-          variant='filled'
-          fullWidth
-          defaultValue={props.userInfo.details.weight}
-          onChange={(e) => {
-            props.setWeight(Number(e.target.value));
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <MobileDatePicker
+          label="Date of Birth"
+          //defaultValue={props.userInfo.details.date_of_birth}
+          value={dateOfBirth}
+          onChange={(date) => {
+            handleDOBChange(date);
           }}
-        />
-        <DefaultTimeSpans setDefaultTimespan={props.setDefaultTimespan} defaultTimespan={props.userInfo.details.default_timespan} />
-        <FormControlLabel
-          value={props.userInfo.details.show_age}
-          variant="filled"
-          control={
-            <Checkbox
-              checked={showWeight}
-              onChange={() => { handleWeightPreferenceChange() }}
+          renderInput={(params) =>
+            <TextField {...params}
+              fullWidth
+              variant="filled"
             />
           }
-          label="Weight At Time Of Reading"
-          labelPlacement="start"
         />
-        <FormControlLabel
-          value={props.userInfo.details.show_age}
-          variant="filled"
-          control={
-            <Checkbox
-              checked={showAge}
-              onChange={() => {handleAgePreferenceChange()}}
-             />
-          }
-          label="Age At Time Of Reading"
-          labelPlacement="start"
-        />
-        <FormControlLabel
-          value={props.userInfo.details.show_24_hours}
-          variant="filled"
-          control={
-            <Checkbox
-              checked={show24Hours}
-              onChange={() => {handle24HoursPreferenceChange()}}
-             />
-          }
-          label="24 Hour Mode For Readings"
-          labelPlacement="start"
-        />
-        <TimeZoneList timezone={props.userInfo.details.timezone} setTimeZone={props.setTimeZone} value={props.userInfo.details.timezone} />
+      </LocalizationProvider>
+      <TextField
+        id='weight'
+        label='Weight'
+        type='number'
+        variant='filled'
+        fullWidth
+        defaultValue={props.userInfo.details.weight}
+        onChange={(e) => {
+          props.setWeight(Number(e.target.value));
+        }}
+      />
+      <DefaultTimeSpans setDefaultTimespan={props.setDefaultTimespan} defaultTimespan={props.userInfo.details.default_timespan} />
+      <FormControlLabel
+        value={props.userInfo.details.show_age}
+        variant="filled"
+        control={
+          <Checkbox
+            checked={showWeight}
+            onChange={() => { handleWeightPreferenceChange() }}
+          />
+        }
+        label="Weight At Time Of Reading"
+        labelPlacement="start"
+      />
+      <FormControlLabel
+        value={props.userInfo.details.show_age}
+        variant="filled"
+        control={
+          <Checkbox
+            checked={showAge}
+            onChange={() => {handleAgePreferenceChange()}}
+            />
+        }
+        label="Age At Time Of Reading"
+        labelPlacement="start"
+      />
+      <FormControlLabel
+        value={props.userInfo.details.show_24_hours}
+        variant="filled"
+        control={
+          <Checkbox
+            checked={show24Hours}
+            onChange={() => {handle24HoursPreferenceChange()}}
+            />
+        }
+        label="24 Hour Mode For Readings"
+        labelPlacement="start"
+      />
+      <TimeZoneList timezone={props.userInfo.details.timezone} setTimeZone={props.setTimeZone} value={props.userInfo.details.timezone} />
+      <div style={{display: 'flex', justifyContent: 'space-between'}}>
         <Button
           variant='contained'
           onClick={() => { handleSaveClick() }}
@@ -151,13 +151,14 @@ const EditUser = (props) => {
         >
           Cancel
         </Button>
-        <Button
-          variant='contained'
-          onClick={() => { console.log('Soonish') }}
-        >
-          Change Password
-        </Button>
-
+      </div>
+      <Button
+        variant='contained'
+        disabled
+        onClick={() => { console.log('Soonish') }}
+      >
+        Change Password
+      </Button>
     </StyledSignUpDiv>
   )
 }
