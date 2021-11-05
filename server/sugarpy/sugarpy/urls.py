@@ -21,7 +21,7 @@ from rest_framework import routers, serializers, viewsets
 from rest_framework.authtoken.views import obtain_auth_token
 
 from readings.views import ReadingDetail, ReadingList, ReadingListTimeSpan
-from user_details.views import SinglerUserDetail, UserDetailList, UserList, UserDetail, NewUser, UserSelfDetail, Logout
+from user_details.views import SinglerUserDetail, UserDetailList, UserList, UserDetail, NewUser, UserSelfDetail, Logout, ChangePassword
 #from sugarchart_user.views import SugarChartUserList, SugarChartUserDetail
 
 #from user_details.serializers import UserDetailSerializer
@@ -68,6 +68,7 @@ urlpatterns = [
     path('register/', NewUser.as_view()),
     path('user/login/', obtain_auth_token),
     path('user/logout/', Logout.as_view()),
+    path('user/change_password/', ChangePassword.as_view()),
     path('api-auth/', include('rest_framework.urls')),
     #path('api/login/', login),
     path('api/readings/', ReadingList.as_view()),

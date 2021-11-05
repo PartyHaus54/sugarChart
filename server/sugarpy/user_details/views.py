@@ -15,7 +15,19 @@ class Logout(APIView):
 
   def delete_auth_token(self, request):
     request.user.auth_token.delete()
-    return Response('User logged out successfully?')
+    return Response('User logged out successfully')
+
+class ChangePassword(APIView):
+  def post(self, request):
+    return self.update_password(request)
+
+  def update_password(self, request):
+    password = request.data['password']
+    print('PASSWORD IS')
+    print(password)
+    request.user.set_password(password)
+    request.user.save()
+    return Response('Password updated')
 
 class NewUser(generics.ListCreateAPIView):
   def get_queryset(self):
@@ -34,6 +46,19 @@ class NewUser(generics.ListCreateAPIView):
   @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
   def perform_create(self, serializer):
     serializer.save()
+
+# class UserPasswordUpdate(generics.ListCreateAPIView):
+#   def get_queryset(self):
+#     username = self.request.user.username
+#     return User.objects.filter(username=user_id)
+#   serializer_class = UpdateUserPasswordSerializer
+#   permissions_classes = (
+#     IsAdminOrCurrentUser
+#   )
+
+#   @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+#   def perform_create(self, serializer):
+#     serializer.save()
 
 class UserList(generics.ListCreateAPIView):
   def get_queryset(self):

@@ -11,7 +11,8 @@ const StyledDiv = styled.div`
 const StyledSVG = styled.svg`
   background-color: white;
   margin-top: 16px;
-  `;
+  max-height: 50vh;
+`;
   //margin-bottom: 5px;
 
 const StyledAxisText = styled.text`
@@ -111,14 +112,14 @@ const Chart = ({timeRange, readings, activeReading}) => {
     updateRenderData(readings, timeRange);
   }, [readings]);
 
-  useEffect(() => {
-    if (activeReading.id !== 0) {
-      //updateActivePoint();
-    }
-  }, [
-    timeRange,
-    activeReading
-  ]);
+  // useEffect(() => {
+  //   if (activeReading.id !== 0) {
+  //     //updateActivePoint();
+  //   }
+  // }, [
+  //   timeRange,
+  //   activeReading
+  // ]);
 
   const convertTimeDataForRender = (point, divisor) => {
     // Issue is suspected to be in time zone

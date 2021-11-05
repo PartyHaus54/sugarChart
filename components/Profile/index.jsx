@@ -28,6 +28,7 @@ const Profile = ({}) => {
   const [userInfo, setUserInfo] = useState(placeholderUser);
   const [displayMode, setDisplayMode] = useState(true);
   const [username, setUsername] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
@@ -37,6 +38,9 @@ const Profile = ({}) => {
   const [showAge, setShowAge] = useState(false);
   const [show24Hours, setShow24Hours] = useState(false);
   const [defaultTimespan, setDefaultTimespan] = useState(7);
+  const [modalTitle, setModalTitle] = useState('Unable To Update Password');
+  const [modalDescription, setModalDescription] = useState('This is the text to describe what is to be communicated to the user. Please send them good wishes and helpful guidance for their quest');
+  const [modalOpen, setModalOpen] = useState(false);
 
   const router = useRouter();
 
@@ -119,6 +123,53 @@ const Profile = ({}) => {
     router.push('/');
   }
 
+  const changePasword = () => {
+    if (password !== passwordConfirmation) {
+      setModalDescription('Password Confirmation Does Not Match');
+      setModalOpen(true);
+    } else if (password.length < 4) {
+      setModalDescription('Password is too short!');
+      setModalOpen(true);
+    } else {
+      axios({
+        method: 'post',
+        url: `${django.url}/user/login/`,
+        headers: {
+          'Accept': '*/*',
+          'Content-Type': 'application/json'
+        },
+        data: {
+          username: userInfo.username,
+          password: currentPassword
+        }
+      })
+      .then((currPassResponse) => {
+        axios({
+          method: 'post',
+          url: `${django.url}/user/change_password/`,
+          headers: {
+            'Accept': '*/*',
+            'Authorization': `Token ${token}`,
+            'Content-Type': 'application/json'
+          },
+          data: {
+            password: password
+          }
+        })
+        .then(passChangeResponse => {
+          console.log(passChangeResponse);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      })
+      .catch(err => {
+        setModalDescription('The current password is not correct');
+        setModalOpen(true);
+      });
+    }
+  }
+
   return (
     <React.Fragment>
       {
@@ -131,8 +182,10 @@ const Profile = ({}) => {
           :
         <EditUser userInfo={userInfo}
           saveUserInfo={saveUserInfo}
+          setCurrentPassword={setCurrentPassword}
           setPassword={setPassword}
           setPasswordConfirmation={setPasswordConfirmation}
+          changePasword={changePasword}
           setDateOfBirth={setDateOfBirth}
           setWeight={setWeight}
           setTimeZone={setTimeZone}
@@ -141,6 +194,10 @@ const Profile = ({}) => {
           setShow24Hours={setShow24Hours}
           setDefaultTimespan={setDefaultTimespan}
           toggleDisplayMode={toggleDisplayMode}
+          modalTitle={modalTitle}
+          modalDescription={modalDescription}
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
         />
       }
     </React.Fragment>
