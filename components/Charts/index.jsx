@@ -5,7 +5,7 @@ import axios from 'axios';
 import TimeRangeSelect from '../ReadingsList/TimeRangeSelect.jsx';
 
 import Dropdown from '../FormComponents/Dropdown';
-import Chart from './Chart';
+import Chart from './Chart/Chart.jsx';
 import DisplayReadings from '../ReadingsList/DisplayReadings.jsx';
 import EditReadings from '../ReadingsList/EditReadings.jsx';
 import EditReadingModal from '../Modal/EditReadingModal.jsx';
@@ -20,7 +20,6 @@ import styled from '@emotion/styled';
 
 const StyledSettingsBar = styled.div`
   display: flex;
-
 `;
 
 const Charts = (props) => {
@@ -94,10 +93,7 @@ const Charts = (props) => {
     })
     .then(userInfoResponse => {
       setUserInfo(userInfoResponse.data[0]);
-      console.log('user info response', userInfoResponse.data[0])
       var timespan = userInfoResponse.data[0].details.default_timespan;
-      setTimeRange(timespan);
-      console.log('Default timespan', timespan);
       axios({
         method: 'get',
         url: `${django.url}/api/readings_since/${timespan}/`,
@@ -222,11 +218,15 @@ const Charts = (props) => {
         toggleView={() => { setOpen(!open); }}
       />
       {/* <h1>{`${timeRange} Day Readings`}</h1> */}
+      {/* <Chart timeRange={timeRange}
+        readings={readings}
+        activeReading={activeReading}
+      /> */}
       <Chart timeRange={timeRange}
         readings={readings}
         activeReading={activeReading}
       />
-      <StyledSettingsBar>
+      <StyledSettingsBar id="chart-breakpoint-target">
         <TimeRangeSelect timeRange={timeRange} updateTimeSpan={updateTimeSpan} />
         {/* <Dropdown
           id="timeRange"
