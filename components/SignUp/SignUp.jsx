@@ -9,11 +9,14 @@ import { useRouter } from 'next/router';
 
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
-import DatePicker from '@mui/lab/DatePicker';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
+import Box from '@mui/material/Box';
 
-const StyledSignUpDiv = styled.div`
+const StyledSignUpFooterDiv = styled.div`
+  display: flex;
+  justify-content: space-around;
 `;
 
 const SignUp = () => {
@@ -22,7 +25,7 @@ const SignUp = () => {
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState(null);
   const [weight, setWeight] = useState(null);
-  const [timezone, setTimeZone] = useState('UTC');
+  const [timezone, setTimeZone] = useState('');
 
   const handleRegistrationClick = (e) => {
     e.preventDefault();
@@ -76,7 +79,12 @@ const SignUp = () => {
 
   const router = useRouter();
   return (
-    <StyledSignUpDiv>
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-evenly',
+      height: '75vh'
+    }}>
       <TextField
         required
         id='username'
@@ -110,23 +118,18 @@ const SignUp = () => {
         }}
       />
       <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DatePicker
+        <MobileDatePicker
           label="Date of Birth"
           value={dateOfBirth}
-          onChange={(e) => {
-            setDateOfBirth(e.target.value);
+          onChange={(date) => {
+            setDateOfBirth(date);
           }}
-          renderInput={() => <TextField
-            id='date-of-birth'
-            label='Date of Birth'
-            type='date'
-            variant='filled'
-            fullWidth
-            value={dateOfBirth}
-            onChange={(e) => {
-              setDateOfBirth(e.target.value);
-            }}
-          />}
+          renderInput={(params) =>
+            <TextField {...params}
+              fullWidth
+              variant="filled"
+            />
+          }
         />
       </LocalizationProvider>
       <TextField
@@ -140,22 +143,24 @@ const SignUp = () => {
         }}
       />
       <TimeZoneList timezone={timezone} setTimeZone={setTimeZone} />
-      <Button
-        variant='contained'
-        onClick={(e) => { handleRegistrationClick(e) }}
-      >
-        Register
-      </Button>
-      <Button
-        variant='contained'
-        onClick={e => {
-          e.preventDefault();
-          router.push('/');
-        }}
-      >
-        Cancel
-      </Button>
-    </StyledSignUpDiv>
+      <StyledSignUpFooterDiv>
+        <Button
+          variant='contained'
+          onClick={(e) => { handleRegistrationClick(e) }}
+        >
+          Register
+        </Button>
+        <Button
+          variant='contained'
+          onClick={e => {
+            e.preventDefault();
+            router.push('/');
+          }}
+        >
+          Cancel
+        </Button>
+      </StyledSignUpFooterDiv>
+    </Box>
   )
 }
 

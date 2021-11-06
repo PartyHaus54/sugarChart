@@ -173,6 +173,7 @@ const Charts = (props) => {
         }
       })
         .then(readingsResponse => {
+          setActiveReading(placeholderReading);
           setReadings(readingsResponse.data);
           setOpen(false);
         });

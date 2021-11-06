@@ -11,6 +11,7 @@ import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import MobileTimePicker from '@mui/lab/MobileTimePicker';
+import { TimePicker } from '@material-ui/pickers';
 
 const NewEntry = () => {
   let [glucoseLvl, setGlucoseLvl] = useState(null);
@@ -123,6 +124,7 @@ const NewEntry = () => {
           <MobileDatePicker
             label="Date"
             value={observedDate}
+            onOpen={() => { setObservedDate(Date.now()) }}
             onChange={(newDate) => {
               setObservedDate(newDate);
             }}
@@ -143,6 +145,7 @@ const NewEntry = () => {
           <MobileTimePicker
             label="Time"
             value={observedTime}
+            onOpen={() => {console.log(setObservedTime(Date.now()))}}
             onChange={(newTime) => {
               setObservedTime(newTime);
             }}

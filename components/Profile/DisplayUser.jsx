@@ -6,6 +6,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import Button from '@material-ui/core/Button';
 
+import { DateTime } from 'luxon';
+
 const StyledProfileDiv = styled.div`
 `;
 
@@ -31,7 +33,7 @@ const DisplayUser = ({userInfo, toggleDisplayMode, logout}) => {
           <AccountCircleIcon className={styles.accountIcon} />
         }
         <h1>{userInfo.username}</h1>
-        <h3>DOB: {userInfo.details.date_of_birth}</h3>
+        <h3>DOB: {DateTime.fromISO(userInfo.details.date_of_birth).toFormat('LL-dd-yyyy')}</h3>
         <h3>Weight: {userInfo.details.weight}</h3>
       </div>
       <StyledSaveCancelRowDiv>

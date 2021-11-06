@@ -113,25 +113,25 @@ const Chart = ({timeRange, readings, activeReading }) => {
       label: 'Diabetes',
       rangeMin: 126,
       rangeMax: 500,
-      color: 'rgba(255,0,0,0.2)'
+      color: 'rgba(255, 0, 0, 0.2)'
     },
     {
       label: 'Pre-Diabetes',
       rangeMin: 100,
       rangeMax: 125,
-      color: 'rgba(255,255,0,0.2)'
+      color: 'rgba(255, 255, 0, 0.2)'
     },
     {
       label: 'Normal-glycemia',
       rangeMin: 70,
       rangeMax: 99,
-      color: 'rgba(0,255,0,0.2)'
+      color: 'rgba(0, 255, 0, 0.2)'
     },
     {
       label: 'Hypo-glycemia',
       rangeMin: 0,
       rangeMax: 69,
-      color: 'rgba(255,0,0, 0.2)'
+      color: 'rgba(255, 0, 0, 0.2)'
     }
   ];
 
@@ -177,7 +177,7 @@ const Chart = ({timeRange, readings, activeReading }) => {
     var viewBox = setSVGSize();
     console.log('viewBox', viewBox);
 
-    var padding = setPaddingPx(viewBox, 0.055, 0.08, 0.1, 0.08);
+    var padding = setPaddingPx(viewBox, 0.055, .05, 0.1, .05);
     console.log('padding', padding);
 
     var origin = createAxisLines(viewBox, padding);
@@ -376,7 +376,7 @@ const Chart = ({timeRange, readings, activeReading }) => {
   const createReadingLabels = (renderedPoints, xConverter, yConverter, activeReading) => {
     var renderedLabels = [];
     var activeReadingAdded = false;
-    if (activeReading.id && !activeReadingAdded) {
+    if (activeReading.id) {
       // Prioritizes active reading
       renderedLabels.push({
         id: activeReading.id,
@@ -388,22 +388,24 @@ const Chart = ({timeRange, readings, activeReading }) => {
       activeReadingAdded = true;
     }
     renderedPoints.forEach(point => {
-      var labelOverlap = false;
-      renderedLabels.forEach(label => {
-        var xDiff = Math.abs(point.x - label.x);
-        var yDiff = Math.abs(point.y - label.y);
-        var labelDistance = (xDiff ** 2 + yDiff ** 2) ** 0.5;
-        if (labelDistance < 20) {
-          labelOverlap = true;
+      if (point.id && point.id !== activeReading.id) {
+        var labelOverlap = false;
+        renderedLabels.forEach(label => {
+          var xDiff = Math.abs(point.x - label.x);
+          var yDiff = Math.abs(point.y - label.y);
+          var labelDistance = (xDiff ** 2 + yDiff ** 2) ** 0.5;
+          if (labelDistance < 20) {
+            labelOverlap = true;
+          }
+        });
+        if (!labelOverlap) {
+          renderedLabels.push({
+            id: point.id,
+            x: point.x,
+            y: point.y,
+            label: point.label
+          })
         }
-      });
-      if (!labelOverlap) {
-        renderedLabels.push({
-          id: point.id,
-          x: point.x,
-          y: point.y,
-          label: point.label
-        })
       }
     });
     return renderedLabels;
@@ -437,40 +439,43 @@ const Chart = ({timeRange, readings, activeReading }) => {
       var x = xConverter(dateTime);
       console.log('x', x);
 
-      if (labels.length === 0) {
-        labels.push({
-          id: labelText,
-          x: x,
-          y: viewBox.height - padding.bottom / 6,
-          label: labelText
-        });
-        ticks.push({
-          id: labelText,
-          x: x,
-          y1: viewBox.height - padding.bottom,
-          y2: viewBox.height - padding.bottom / 2
-        });
-      } else if (labels[labels.length - 1].x - x > 80) {
-        labels.push({
-          id: labelText,
-          x: x,
-          y: viewBox.height - padding.bottom / 6,
-          label: labelText
-        });
-        ticks.push({
-          id: labelText,
-          x: x,
-          y1: viewBox.height - padding.bottom,
-          y2: viewBox.height - padding.bottom / 2
-        });
-      } else {
-        ticks.push({
-          id: labelText,
-          x: x,
-          y1: viewBox.height - padding.bottom,
-          y2: viewBox.height - padding.bottom / 1.3
-        });
+      if (Date.now() > epochMidnight) {
+        if (labels.length === 0) {
+          labels.push({
+            id: labelText,
+            x: x,
+            y: viewBox.height - padding.bottom / 6,
+            label: labelText
+          });
+          ticks.push({
+            id: labelText,
+            x: x,
+            y1: viewBox.height - padding.bottom,
+            y2: viewBox.height - padding.bottom / 2
+          });
+        } else if (labels[labels.length - 1].x - x > 80) {
+          labels.push({
+            id: labelText,
+            x: x,
+            y: viewBox.height - padding.bottom / 6,
+            label: labelText
+          });
+          ticks.push({
+            id: labelText,
+            x: x,
+            y1: viewBox.height - padding.bottom,
+            y2: viewBox.height - padding.bottom / 2
+          });
+        } else {
+          ticks.push({
+            id: labelText,
+            x: x,
+            y1: viewBox.height - padding.bottom,
+            y2: viewBox.height - padding.bottom / 1.3
+          });
+        }
       }
+
       epochMidnight -= 86400000;
       console.log(labelText);
     }
