@@ -72,6 +72,10 @@ const Profile = ({}) => {
       setShowWeight(response.data[0].details.show_weight);
       setDefaultTimespan(response.data[0].details.default_timespan);
       setTimeZone(response.data[0].details.timezone);
+    })
+    .catch(err => {
+      console.log(err);
+      router.push('/');
     });
   }
 
@@ -119,7 +123,10 @@ const Profile = ({}) => {
     })
     .then((res) => {
       console.log(res);
+      django.deleteToken();
     });
+
+    django.deleteToken();
     router.push('/');
   }
 

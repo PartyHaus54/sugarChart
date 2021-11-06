@@ -21,7 +21,7 @@ from rest_framework import routers, serializers, viewsets
 from rest_framework.authtoken.views import obtain_auth_token
 
 from readings.views import ReadingDetail, ReadingList, ReadingListTimeSpan
-from user_details.views import SinglerUserDetail, UserDetailList, UserList, UserDetail, NewUser, UserSelfDetail, Logout, ChangePassword
+from user_details.views import SinglerUserDetail, UserDetailList, UserList, UserDetail, NewUser, UserSelfDetail, Logout, ChangePassword, LoginStatus
 #from sugarchart_user.views import SugarChartUserList, SugarChartUserDetail
 
 #from user_details.serializers import UserDetailSerializer
@@ -66,6 +66,7 @@ urlpatterns = [
     path('user_info/', UserSelfDetail.as_view()),
     path('users/<int:pk>/', UserDetail.as_view()),
     path('register/', NewUser.as_view()),
+    path('user/login_status/', LoginStatus.as_view()),
     path('user/login/', obtain_auth_token),
     path('user/logout/', Logout.as_view()),
     path('user/change_password/', ChangePassword.as_view()),

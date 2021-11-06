@@ -9,6 +9,14 @@ from user_details.models import UserDetail as UserDetailModel
 from user_details.serializers import UserDetailSerializer, UserSerializer, RegisterUserSerializer
 from user_details.permissions import IsAdminOrCurrentUser
 
+class LoginStatus(APIView):
+  def get(self, request):
+    print(self.request.user)
+    if self.request.user.is_anonymous:
+      return Response(False)
+    else:
+      return Response(True)
+
 class Logout(APIView):
   def post(self, request):
     return self.delete_auth_token(request)
