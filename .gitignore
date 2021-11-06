@@ -5,9 +5,6 @@ server/sugarpy/sugarpy/secrets.py
 
 # django
 server/sugar-venv/
-server/sugarpy/readings/__pycache__/
-server/sugarpy/sugarpy/__pycache__/
-
 
 # dependencies
 /node_modules
