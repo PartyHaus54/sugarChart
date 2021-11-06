@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, date
 import pytz
+from django.db.models import Min
 from rest_framework import generics, permissions, renderers
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import action
@@ -68,12 +69,21 @@ class ReadingListTimeSpan(generics.ListCreateAPIView):
     naive_now = datetime.utcnow()
     now = pytz.utc.localize(naive_now)
     days_ago = self.kwargs['days_ago']
-    time_span = timedelta(days=days_ago)
-    span_start = now - time_span
-    print('Gettings Readings From')
-    print(span_start)
-    print('To now:')
-    print(now)
+    if days_ago > 0:
+      time_span = timedelta(days=days_ago)
+      span_start = now - time_span
+      print('Gettings Readings From')
+      print(span_start)
+      print('To now:')
+      print(now)
+    else:
+      print('Forever starts')
+      min = Reading.objects.filter().aggregate(observed_datetime=Min('observed_datetime'))
+      #min = Reading.objects.filter().values_list('observed_datetime').annotate(Min('observed_datetime')).order_by('observed_datetime')[0]
+      print(min)
+      #time_span = timedelta(days=days_ago)
+      #span_start = now - time_span
+      span_start = Reading.objects.filter().aggregate(observed_datetime=Min('observed_datetime'))['observed_datetime']
     if self.request.user.is_staff == True:
       return Reading.objects.filter(observed_datetime__gte=span_start, is_deleted=False)
     elif not self.request.user.is_anonymous:
