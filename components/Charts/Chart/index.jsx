@@ -5,13 +5,14 @@ import { DateTime } from 'luxon';
 const StyledDiv = styled.div`
   height: 50rem;
   width: 50rem;
-  background: white;
+  background: black;
 `;
 
 const StyledSVG = styled.svg`
   background-color: white;
   margin-top: 16px;
-  max-height: 50vh;
+  //max-height: 45vh;
+  padding: 0;
 `;
   //margin-bottom: 5px;
 
@@ -25,10 +26,14 @@ const StyledActivePointText = styled.text`
 
 const Chart = ({timeRange, readings, activeReading}) => {
   const [chartWidth, setChartWidth] = useState(0);
-  const [timeDataMin, setTimeDataMin] = useState(0);
   const [chartHeight, setChartHeight] = useState(0);
+  const [viewWidth, setViewWidth] = useState(500);
+  const [viewHeight, setViewHeight] = useState(500);
+  const [windowSizeScalingMod, setWindowSizeScalingMod] = useState(1);
+  const [timeDataMin, setTimeDataMin] = useState(0);
   const [minReading, setMinReading] = useState(70);
   const [maxReading, setMaxReading] = useState(99);
+  const [xRenderDivisor, setXRenderDivisor] = useState(1)
   //const [yRenderDivisor, setYRenderDivisor] = useEffect(1);
   const [displayPoints, setDisplayPoints] = useState([]);
   const [displayLabels, setDisplayLabels] = useState([]);
@@ -42,10 +47,10 @@ const Chart = ({timeRange, readings, activeReading}) => {
   const [yAxis, setYAxis] = useState({ x1: 0, y1: 0, x2: 0, y2: 0, ticks: [], labels: [] });
   //const [padding, setPadding] = useState(padding);
 
-  var viewHeight = 500;
-  var viewWidth = 500;
+  //var viewHeight = 500;
+  //var viewWidth = 500;
   const paddingPercent = 0.1;
-  var padding = viewWidth * paddingPercent;
+  var padding = 50;
   //setPadding(padding);
 
   const colorRanges = {
@@ -110,7 +115,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
 
   useEffect(() => {
     updateRenderData(readings, timeRange);
-  }, [readings]);
+  }, [readings, chartWidth]);
 
   // useEffect(() => {
   //   if (activeReading.id !== 0) {
@@ -129,7 +134,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
 
     // With hard coded point, and the current divisor/padding calculations, it works
     // The issue is that the point being passed into this function is not accurate
-    var renderValue = (point / divisor) + padding;
+    var renderValue = ((point / divisor) + padding) * windowSizeScalingMod;
     // console.log('render value', renderValue);
     return renderValue;
   }
@@ -175,6 +180,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
     var timeRenderRange = viewWidth - viewWidth * 2 * paddingPercent;
 
     var timeDataDivisor = timeDataRange / timeRenderRange;
+    console.log('timeDataDivisor', timeDataDivisor);
 
 
 
@@ -213,11 +219,41 @@ const Chart = ({timeRange, readings, activeReading}) => {
 
     const setChartSize = () => {
       // This is modularized in a function because dynamically setting the chart height later could get messy
-      var width = document.getElementById('chart-container').offsetWidth;
-      var height = width;
+      var width = document.getElementById('chart-breakpoint-target').offsetWidth;
+      var windowWidth = window.innerWidth;
+      if (windowWidth < 600) {
+        var height = width;
+      } else {
+        var height = window.innerHeight / 2.25;
+        console.log('height', height)
+        var scalingMod = (500 / height) - 1;
+        scalingMod /= 2;
+        scalingMod += 1;
+        console.log('scaling mod', scalingMod);
+        setWindowSizeScalingMod(1.1333333333333333333333333333333);
+      }
+      console.log('vh/h', viewHeight / height);
+      // At 1200
+        // width 1443 / 1152 = 1.2526
+        // height 500/399.1 = 1.2528
+      setViewWidth(width * (viewHeight / height));
       setChartWidth(width);
-      // Versatile height later (MVP for now)
-      setChartHeight(width);
+      setChartHeight(height);
+      // windowWidth > 600
+        // range = 440.62
+        // container = 552
+        // diff px = 111.38
+        // diff % = 1.252780173392038491216921610458
+      // windowWidth > 900
+        // range = 680.08
+        // container = 852
+        // diff px = 171.92
+        // diff % = 1.3233737207387366192212680861075
+      // windowWidth > 1200
+        // range = 919.55
+        // container = 1152
+        // diff px = 232.45
+        // diff % = 1.2527866891414278723288565058996
     }
 
     setChartSize();
@@ -311,23 +347,17 @@ const Chart = ({timeRange, readings, activeReading}) => {
     var labelDate = new Date();
     var labelText = labelDate.toISOString().split('T')[0];
 
-    console.log(`labelText`, labelText);
-
     var localOffset = Date().split(' ')[5];
-    console.log('localOffset', localOffset);
 
     var hoursOffset = Number(localOffset.slice(3))/100;
-    console.log('hoursOffset', hoursOffset);
 
     var epochMidnight = Date.parse(labelText) - (3600000 * hoursOffset);
     if (epochMidnight > Date.now()) {
       epochMidnight -= 86400000;
     }
-    console.log('EM', epochMidnight);
 
     // This is a check to see how many hours it's been since local midnight. It provides an accurate difference
     var hours = (Date.now() - epochMidnight) / 1000 / 60 / 60;
-    console.log('hours', hours);
 
     var baseTickOffset = 12;
 
@@ -434,23 +464,23 @@ const Chart = ({timeRange, readings, activeReading}) => {
   // }
 
   return (
-    <div id="chart-container">
-      <StyledSVG width={chartWidth} height={chartHeight} viewBox={`0 0 ${viewWidth} ${viewHeight}`} className="chart">
+    <div id="chart-container" style={{padding: 0, margin: 0}}>
+      <StyledSVG width={chartWidth} height={chartHeight} viewBox={`0 0 ${viewWidth} ${500}`} className="chart">
+        {
+          displayRanges.map((range, key) => (
+            <rect key={key} x={0} y={range.y} width={viewWidth} height={range.height} fill={range.color} />
+          ))
+        }
         <line x1={xAxis.x1} y1={xAxis.y1} x2={xAxis.x2} y2={xAxis.y2} stroke="black" strokeWidth={3}/>
+        <line x1={yAxis.x1} y1={yAxis.y1} x2={yAxis.x2} y2={yAxis.y2} stroke="black" strokeWidth={3} />
         {
           xAxis.ticks.map((tick, key) =>
             <line key={key} x1={tick.x1} y1={tick.y1} x2={tick.x2} y2={tick.y2} stroke="black" />
           )
         }
         {
-          xAxis.labels.map(label => (
-            <StyledAxisText x={label.x} y={label.y} textAnchor='middle' >{label.label}</StyledAxisText>
-          ))
-        }
-        <line x1={yAxis.x1} y1={yAxis.y1} x2={yAxis.x2} y2={yAxis.y2} stroke="black" strokeWidth={3} />
-        {
-          displayRanges.map(range => (
-            <rect key={range.id} x="0" y={range.y} width={viewWidth} height={range.height} fill={range.color} />
+          xAxis.labels.map((label, key) => (
+            <StyledAxisText key={key} x={label.x} y={label.y} textAnchor='middle' >{label.label}</StyledAxisText>
           ))
         }
         {/* {
@@ -465,21 +495,17 @@ const Chart = ({timeRange, readings, activeReading}) => {
         }
         {
           displayPoints.map(point => (
-            <g>
-              <circle key={point.id} cx={point.x} cy={point.y} r={pointSize} fill={point.id === activeReading.id ? 'red' : 'black'} />
-            </g>
+            <circle key={point.id} cx={point.x} cy={point.y} r={pointSize} fill={point.id === activeReading.id ? 'red' : 'black'} />
           ))
         }
         {
-          displayLabels.map(point => (
-            <g>
-              <text x={point.x + pointSize} y={point.y - pointSize}
-                fontSize={21}
-                fill={point.id === activeReading.id ? 'red' : 'black'}
-              >
-                {point.label}
-              </text>
-            </g>
+          displayLabels.map((point, key) => (
+            <text key={key} x={point.x + pointSize} y={point.y - pointSize}
+              fontSize={21}
+              fill={point.id === activeReading.id ? 'red' : 'black'}
+            >
+              {point.label}
+            </text>
           ))
         }
         {/* {
@@ -497,7 +523,7 @@ const Chart = ({timeRange, readings, activeReading}) => {
             :
           null
         } */}
-        { displayPoints.length === 0 && <text x={viewWidth / 2} y={viewHeight / 2} textAnchor='middle' >No Data For Time Range</text> }
+        {displayPoints.length === 0 && <text x={viewWidth / 2} y={viewHeight / 2} textAnchor='middle' >No Data For Time Range</text> }
       </StyledSVG>
     </div>
 )};

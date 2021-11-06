@@ -150,7 +150,7 @@ const SignUp = () => {
         variant='contained'
         onClick={e => {
           e.preventDefault();
-          router.push('menu');
+          router.push('/');
         }}
       >
         Cancel

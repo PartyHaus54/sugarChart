@@ -125,9 +125,11 @@ const Profile = ({}) => {
 
   const changePasword = () => {
     if (password !== passwordConfirmation) {
+      setModalTitle('Unable To Update Password');
       setModalDescription('Password Confirmation Does Not Match');
       setModalOpen(true);
     } else if (password.length < 4) {
+      setModalTitle('Unable To Update Password');
       setModalDescription('Password is too short!');
       setModalOpen(true);
     } else {
@@ -157,13 +159,14 @@ const Profile = ({}) => {
           }
         })
         .then(passChangeResponse => {
-          console.log(passChangeResponse);
+          router.push('menu');
         })
         .catch(err => {
           console.log(err);
         });
       })
       .catch(err => {
+        setModalTitle('Unable To Update Password');
         setModalDescription('The current password is not correct');
         setModalOpen(true);
       });
