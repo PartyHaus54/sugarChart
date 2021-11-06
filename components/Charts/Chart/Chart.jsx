@@ -183,7 +183,7 @@ const Chart = ({timeRange, readings, activeReading }) => {
     var origin = createAxisLines(viewBox, padding);
     console.log('origin', origin);
 
-    var convertToX = createTimeToXConverter(viewBox, padding, timeRange);
+    var convertToX = createTimeToXConverter(viewBox, padding, timeRange, readings);
     console.log('convertToX', convertToX);
 
     var convertToY = createGlucoseLevelToYConverter(viewBox, padding, readings, glucoseLevelRanges[2]);
@@ -198,7 +198,7 @@ const Chart = ({timeRange, readings, activeReading }) => {
     var readingsLabels = createReadingLabels(readingsDisplay.points, convertToX, convertToY, activeReading);
     console.log('readingsLabels', readingsLabels);
 
-    var xAxisLabels = createXAxisLabels(timeRange, convertToX, viewBox, padding);
+    var xAxisLabels = createXAxisLabels(timeRange, convertToX, viewBox, padding, readings);
 
     //enableReadingLevelToYAxisConverter();
     //renderGlucoseRanges(glucoseLevelRanges);
@@ -207,8 +207,6 @@ const Chart = ({timeRange, readings, activeReading }) => {
     setSVGWidth(viewBox.width);
     setSVGHeight(viewBox.height);
     setAxisOrigin(origin);
-    console.log('convertToX on set', convertToX);
-    console.log('convertToY on set', convertToY);
     setXRenderConverter(convertToX);
     setYRenderConverter(convertToY);
     setDisplayRanges(glucoseRanges);
@@ -275,9 +273,13 @@ const Chart = ({timeRange, readings, activeReading }) => {
   //   return (timestamp - startTime) / xAxisDivisor + paddingLeft;
   // };
 
-  const createTimeToXConverter = (viewBox, padding, timeSpan) => {
+  const createTimeToXConverter = (viewBox, padding, timeSpan, readings) => {
     var endTime = Date.now();
-    var startTime = endTime - (86400000 * timeRange)
+    if (timeSpan > 0) {
+      var startTime = endTime - (86400000 * timeRange);
+    } else {
+      var startTime = Date.parse(readings[readings.length - 1].observed_datetime);
+    }
     var timeDifference = endTime - startTime;
     //setXAxisDivisor(timeDifference / (SVGWidth - paddingLeft - paddingRight));
     var xAxisDivisor = timeDifference / (viewBox.width - padding.left - padding.right);
@@ -411,28 +413,25 @@ const Chart = ({timeRange, readings, activeReading }) => {
     return renderedLabels;
   }
 
-  const createXAxisLabels = (dayCount, xConverter, viewBox, padding) => {
+  const createXAxisLabels = (dayCount, xConverter, viewBox, padding, readings) => {
     var dateTime = new Date();
-    console.log('dateTime', dateTime);
     var labelText = dateTime.toISOString().split('T')[0];
-    console.log('labelText', labelText);
     var localHoursDiff = Date().split(' ')[5].slice(3)/100;
-    console.log('localHoursDiff', localHoursDiff);
     var epochMidnight = Date.parse(labelText) - (3600000 * localHoursDiff);
-    console.log(epochMidnight);
-    console.log(`Is now (Date.now(), ${Date.now()}) > most recent midnight (epochMidnight, ${epochMidnight})?`, Date.now() > epochMidnight);
 
-    var timeDataMin = Date.now() - (86400000 * dayCount)
-    console.log('timeDataMin', timeDataMin);
+    if (dayCount === 0) {
+      var startEpoch = Date.parse(readings[readings.length - 1].observed_datetime);
+      console.log('epochMidnight', epochMidnight);
+      console.log('startEpoch', startEpoch);
+      dayCount = Math.ceil((epochMidnight - startEpoch) / 86400000);
+      console.log('dayCount', dayCount);
+    }
+    var timeDataMin = Date.now() - (86400000 * dayCount);
 
     // These will render the days, hours for day span not MVP?
     var ticks = [];
     var labels = [];
     while (epochMidnight > timeDataMin) {
-      console.log('EM on entry:', epochMidnight);
-      console.log('timeDataMin on entry', timeDataMin);
-      console.log('epochMidnight - timeDataMin:', epochMidnight - timeDataMin);
-      console.log('xConverter at x labels:', xConverter);
       dateTime = new Date(epochMidnight);
       labelText = dateTime.toISOString().split('T')[0];
       labelText = DateTime.fromISO(labelText).toFormat('LL-dd-yyyy');
