@@ -1,4 +1,5 @@
 import React, { useState, useEffect} from 'react';
+import { useRouter } from 'next/router';
 import django from '../../../utils/django.js';
 import axios from 'axios';
 
@@ -26,6 +27,7 @@ const StyledDiv = styled.div`
 const DashBoard = ({dash}) => {
   const [avgSugarLevel, setAvgSugarLevel] = useState('-');
   const [token, setToken] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
     getAverage();
@@ -33,6 +35,7 @@ const DashBoard = ({dash}) => {
 
   const getAverage = () => {
     var token = django.tokenLoader();
+    console.log('token', token);
     axios({
       method: 'get',
       url: `${django.url}/user_info/`,
@@ -42,28 +45,32 @@ const DashBoard = ({dash}) => {
         'Content-Type': 'application/json'
       }
     })
-      .then(response => {
-        console.log(response.data[0]);
-        var defaultTimespan = response.data[0].details.default_timespan;
-        axios({
-          method: 'get',
-          url: `${django.url}/api/readings_since/${defaultTimespan}/`,
-          headers: {
-            'Accept': '*/*',
-            "Authorization": `Token ${token}`,
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(response => {
-            var readings = response.data;
-            var total = 0;
-            readings.forEach(reading => {
-              total += reading.glucose_level;
-            });
-            if (readings.length > 0) {
-              setAvgSugarLevel(Math.ceil(total / readings.length));
-            }
+    .then(response => {
+      console.log(response.data[0]);
+      var defaultTimespan = response.data[0].details.default_timespan;
+      axios({
+        method: 'get',
+        url: `${django.url}/api/readings_since/${defaultTimespan}/`,
+        headers: {
+          'Accept': '*/*',
+          "Authorization": `Token ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          var readings = response.data;
+          var total = 0;
+          readings.forEach(reading => {
+            total += reading.glucose_level;
           });
+          if (readings.length > 0) {
+            setAvgSugarLevel(Math.ceil(total / readings.length));
+          }
+        });
+      })
+      .catch(err => {
+        console.log('handle here!');
+        router.push('/');
       });
   }
 
