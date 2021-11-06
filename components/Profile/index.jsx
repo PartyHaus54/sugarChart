@@ -10,6 +10,7 @@ import EditUser from './EditUser.jsx';
 import styles from '../../styles/Profile.module.css';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
+
 const Profile = ({}) => {
   const placeholderUser = {
     username: 'Username',

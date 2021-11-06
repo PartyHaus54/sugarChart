@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from 'react';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import FormHelperText from '@mui/material/FormHelperText';
 
 const TimeZoneList = ({timezone, setTimeZone}) => {
   const handleChange = (e) => {
-    setTimeZone(e.target.value)
+    setTimeZone(e.target.value);
   }
 
   const timeZoneOptions = [
@@ -395,7 +395,7 @@ const TimeZoneList = ({timezone, setTimeZone}) => {
     // 'Europe/Zagreb',
     // 'Europe/Zaporozhye',
     // 'Europe/Zurich',
-    'GMT',
+    // 'GMT',
     // 'Indian/Antananarivo',
     // 'Indian/Chagos',
     // 'Indian/Christmas',
@@ -428,7 +428,7 @@ const TimeZoneList = ({timezone, setTimeZone}) => {
     // 'Pacific/Kwajalein',
     // 'Pacific/Majuro',
     // 'Pacific/Marquesas',
-     'Pacific/Midway',
+    // 'Pacific/Midway',
     // 'Pacific/Nauru',
     // 'Pacific/Niue',
     // 'Pacific/Norfolk',
@@ -456,23 +456,21 @@ const TimeZoneList = ({timezone, setTimeZone}) => {
   ];
 
   return (
-    <div >
-      <TextField
+    <FormControl variant="filled" fullWidth>
+      <InputLabel id="timezone-label">Timezone</InputLabel>
+      <Select
         id="time-zone-dropdown"
-        select
-        fullWidth
-        defaultValue={timezone}
-        variant="filled"
-        label="Time Zone"
+        labelId="timezone-label"
+        value={timezone}
         onChange={(e) =>{ handleChange(e)} }
       >
         {
           timeZoneOptions.map((option, key) =>
-            <MenuItem value={option} key={key}>{option}</MenuItem>
+            <MenuItem key={key} value={option}>{option}</MenuItem>
           )
         }
-      </TextField>
-    </div>
+      </Select>
+    </FormControl>
   )
 }
 

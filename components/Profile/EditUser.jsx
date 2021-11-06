@@ -64,8 +64,24 @@ const EditUser = (props) => {
     router.push('profile');
   }
 
+
+
   const toggleEditingPassword = () => {
     setEditingPassword(!editingPassword);
+  }
+
+  useEffect(() => {
+    convertToUTC(props.userInfo.details.date_of_birth);
+  }, []);
+
+  const convertToUTC = (datetime) => {
+    var prematureDate = new Date(datetime);
+    var offset = prematureDate.getTimezoneOffset();
+    var prEpoch = Date.parse(prematureDate);
+    prEpoch += offset * 60000
+    var originalDate = new Date(prEpoch);
+
+    setDateOfBirth(originalDate);
   }
 
   return (
@@ -144,8 +160,8 @@ const EditUser = (props) => {
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <MobileDatePicker
                 label="Date of Birth"
-                //defaultValue={props.userInfo.details.date_of_birth}
                 value={dateOfBirth}
+                onAccept={() => console.log('accepted')}
                 onChange={(date) => {
                   handleDOBChange(date);
                 }}

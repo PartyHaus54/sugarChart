@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 
-import FormControl from '@mui/material/FormControl';
+import FormControl from '@material-ui/core/FormControl';
 
-import TextField from '@mui/material/TextField';
-import Select from '@mui/material/Select';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
+import TextField from '@material-ui/core/TextField';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const DefaultTimeSpans = ({defaultTimespan, setDefaultTimespan}) => {
   const handleChange = (e) => {
@@ -51,21 +51,21 @@ const DefaultTimeSpans = ({defaultTimespan, setDefaultTimespan}) => {
   ];
 
   return (
-    <TextField
-      id="default-timespan-dropdown"
-      select
-      fullWidth
-      defaultValue={defaultTimespan}
-      variant="filled"
-      label="Default Timespan"
-      onChange={(e) => handleChange(e)}
-    >
-      {
-        timeSpans.map((span) =>
-          <MenuItem key={span.key} value={span.value}>{span.display}</MenuItem>
-        )
-      }
-    </TextField>
+    <FormControl variant="filled" fullWidth>
+      <InputLabel id="timespan-label">Timespan</InputLabel>
+      <Select
+        id="default-timespan-dropdown"
+        labelId="timespan-label"
+        value={defaultTimespan}
+        onChange={(e) => handleChange(e)}
+      >
+        {
+          timeSpans.map((span) =>
+            <MenuItem key={span.key} value={span.value}>{span.display}</MenuItem>
+          )
+        }
+      </Select>
+    </FormControl>
   )
 }
 
