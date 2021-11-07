@@ -27,6 +27,8 @@ const SignUp = () => {
   const [weight, setWeight] = useState(null);
   const [timezone, setTimeZone] = useState('');
 
+  const [usernameAvailable, setUsernameAvailable] = useState(true);
+
   const handleRegistrationClick = (e) => {
     e.preventDefault();
     if (password.length > 4 && password === passwordConfirmation) {
@@ -77,6 +79,23 @@ const SignUp = () => {
     }
   };
 
+  const handleUsernameChange = (username) => {
+    if (username !== '') {
+      axios({
+        method: 'get',
+        url: `${django.url}/check_username/${username}/`,
+        headers: {
+          'Accept': '*/*',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        setUsernameAvailable(response.data);
+      });
+    }
+    setUsername(username);
+  }
+
   const router = useRouter();
   return (
     <Box sx={{
@@ -85,16 +104,33 @@ const SignUp = () => {
       justifyContent: 'space-evenly',
       height: '75vh'
     }}>
-      <TextField
-        required
-        id='username'
-        label='Username'
-        variant='filled'
-        fullWidth
-        onChange={(e) => {
-          setUsername(e.target.value);
-        }}
-      />
+      {
+        !usernameAvailable
+          ?
+        <TextField
+          required
+          error
+          helperText="Username Taken"
+          id='username'
+          label='Username'
+          variant='filled'
+          fullWidth
+          onChange={(e) => {
+            handleUsernameChange(e.target.value);
+          }}
+        />
+          :
+        <TextField
+          required
+          id='username'
+          label='Username'
+          variant='filled'
+          fullWidth
+          onChange={(e) => {
+            handleUsernameChange(e.target.value);
+          }}
+        />
+      }
       <TextField
         required
         id='password'
