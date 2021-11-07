@@ -1,16 +1,23 @@
 import React, {useState, useEffect} from 'react';
-import django from '../../utils/django';
+import django from '../../utils/django.js';
 import axios from 'axios';
 
 import Modal from '../Modal';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import TextField from '@material-ui/core/TextField';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
+import MobileTimePicker from '@mui/lab/MobileTimePicker';
+import { TimePicker } from '@material-ui/pickers';
 
 const NewEntry = () => {
-  let [glucoseLvl, setGlucoseLvl] = useState(0);
-  let [observedDate, setObservedDate] = useState('');
-  let [observedTime, setObservedTime] = useState('');
+  let [glucoseLvl, setGlucoseLvl] = useState(null);
+  let [observedDate, setObservedDate] = useState(null);
+  let [observedTime, setObservedTime] = useState(null);
+  let [weight, setWeight] = useState(null);
   const [token, setToken] = useState(null);
 
   let [modalTitle, setModalTitle] = useState('Lord or Lady... whatever their preference is');
@@ -22,12 +29,31 @@ const NewEntry = () => {
     setToken(token);
   });
 
+  const handleGlucoseLevelChange = (glucoseLvl) => {
+    setGlucoseLvl(glucoseLvl);
+  }
+
   const handleNewEntrySubmissionClick = (e) => {
     e.preventDefault();
     let entry = {};
-    entry.glucose_level = glucoseLvl;
-    entry.observed_date = observedDate;
-    entry.observed_time = observedTime;
+    entry.glucose_level = Number(glucoseLvl);
+
+    var epochReadingDate = Date.parse(observedDate);
+    console.log('Reading Time preparse', observedDate);
+    var epochDateDifference = observedDate.getTimezoneOffset() * 60 * 1000;
+    epochReadingDate -= epochDateDifference;
+
+    var parsedObservedDate = new Date(epochReadingDate).toISOString().slice(0, 10);
+    entry.observed_date = parsedObservedDate;
+
+    var epochReadingTime = Date.parse(observedTime);
+    console.log('Reading Time preparse', observedTime);
+    var epochTimeDifference = observedTime.getTimezoneOffset() * 60 * 1000;
+    epochReadingTime -= epochTimeDifference;
+    var parsedObservedTime = new Date(epochReadingTime).toISOString().slice(11, 19);
+    entry.observed_time = parsedObservedTime;
+
+    entry.weight = weight;
 
     axios({
       method: 'post',
@@ -37,18 +63,15 @@ const NewEntry = () => {
         'Authorization': `Token ${token}`,
         'Content-Type': 'application/json'
       },
-      data: {
-        glucose_level: glucoseLvl,
-        observed_date: observedDate,
-        observed_time: observedTime
-      }
+      data: entry
     })
     .then((res) => {
-      console.log(res);
-      alert('Entry Logged');
+      console.log('The new entry response is:', res);
+      setModalTitle('Entry Submitted');
+      setModalDescription('Thank you for your Entry');
+      setOpen(true);
     }).catch(err => {
       console.log(err);
-      alert('Something went wrong');
     });
 
     //validate the fields
@@ -62,30 +85,100 @@ const NewEntry = () => {
     //if form is not complete
     //notify user what field they need to fill out
     console.log(entry);
-    setModalTitle('Entry Submitted');
-    setModalDescription('Thank you for your Entry');
-    setOpen(true);
+    // setModalTitle('Entry Submitted');
+    // setModalDescription('Thank you for your Entry');
+    // setOpen(true);
   }
 
   return (
     <React.Fragment>
-      <Modal title={modalTitle} description={modalDescription} open={open} toggleView={()=>{
-        setOpen(!open);
-      }}/>
-      <Box sx={{display: 'flex', flexDirection: 'column'}}>
-        <label>Sugar Level</label>
+      <Modal title={modalTitle}
+        description={modalDescription}
+        open={open}
+        toggleView={()=>{ setOpen(!open); }}
+      />
+      <Box sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-evenly',
+        height: '75vh'
+      }}>
+        <TextField
+          id="glucose-level"
+          label="Glucose Level"
+          required
+          type="number"
+          variant="filled"
+          fullWidth
+          defaultValue={null}
+          //value={String(glucoseLvl)}
+          onChange={(e) => {
+            handleGlucoseLevelChange(String(e.target.value));
+          }}
+        />
+        {/* <label>Sugar Level</label>
         <input type="number" id="glucose_level" onChange = {(e)=>{
           setGlucoseLvl(Number(e.target.value));
-        }}/>
-        <label>Observation Date</label>
+        }}/> */}
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <MobileDatePicker
+            label="Date"
+            value={observedDate}
+            onOpen={() => { setObservedDate(Date.now()) }}
+            onChange={(newDate) => {
+              setObservedDate(newDate);
+            }}
+            renderInput={(params) =>
+              <TextField {...params}
+                required
+                fullWidth
+                variant="filled"
+              />
+            }
+          />
+        </LocalizationProvider>
+        {/* <label>Observation Date</label>
         <input type="date" id="observed_date" onChange = {(e)=>{
           setObservedDate(e.target.value);
-        }}/>
-        <label>Observation Time</label>
+        }}/> */}
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <MobileTimePicker
+            label="Time"
+            value={observedTime}
+            onOpen={() => {console.log(setObservedTime(Date.now()))}}
+            onChange={(newTime) => {
+              setObservedTime(newTime);
+            }}
+            renderInput={(params) =>
+              <TextField {...params}
+                required
+                fullWidth
+                variant="filled"
+              />
+            }
+          />
+        </LocalizationProvider>
+        {/* <label>Observation Time</label>
         <input type="time" id="observed_time" onChange = {(e)=>{
           setObservedTime(e.target.value);
-        }}/>
-        <Button onClick={(e)=>{handleNewEntrySubmissionClick(e)}}>Submit</Button>
+        }}/> */}
+        <TextField
+          id="weight-at-reading"
+          label="Weight"
+          type="number"
+          color="secondary"
+          variant="filled"
+          defaultValue={null}
+          onChange={(e) => {
+            handleWeightChange(String(e.target.value));
+          }}
+        />
+        <Button
+          variant="contained"
+          onClick={(e)=>{handleNewEntrySubmissionClick(e)}}
+        >
+          Submit
+        </Button>
       </Box>
     </React.Fragment>
   )

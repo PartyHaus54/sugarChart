@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import django from '../../utils/django';
 
+import LoginFailureModal from '../Modal/LoginFailureModal.jsx';
+
 import styled from '@emotion/styled';
 
 import Image from 'next/image';
@@ -38,6 +40,11 @@ const StyledLoginDiv = styled.div`
   }
 `;
 
+const StyledButtonRowDiv = styled.div`
+  display: flex;
+  justify-content: space-around;
+`;
+
 const StyledConstructionP = styled.p`
   text-align: center;
 `;
@@ -50,10 +57,15 @@ const LogIn = () => {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [open, setOpen] = useState(false);
 
   return (
     <StyledLoginDiv>
-      {/* <img src={logo}/> */}
+      <LoginFailureModal
+        open={open}
+        setOpen={setOpen}
+        toggleView={() => { setOpen(!open); }}
+      />
       <h1>Sugar Chart</h1>
       <div>
         <Image className='logo' src={logo} alt='butterfly logo'/>
@@ -82,40 +94,44 @@ const LogIn = () => {
             setPassword(e.target.value);
           }}
         />
-        <Button
-          variant='contained'
-          onClick={e => {
-            e.preventDefault();
-            axios({
-              method: 'post',
-              url: `${django.url}/user/login/`,
-              headers: {
-                'Accept': '*/*',
-                'Content-Type': 'application/json'
-              },
-              data: {
-                username: username,
-                password: password
-              }
-            })
-            .then(response => {
-              document.cookie = `djangoToken=${response.data.token}; SameSite=None; Secure`;
-            });
-            router.push('menu');
-          }}
-        >
-          Sign In
-        </Button>
-        <Button
-          variant='contained'
-          onClick={e => {
-            e.preventDefault();
-            router.push('signup');
-          }}
-        >
-          Sign Up
-        </Button>
-        <StyledConstructionP>🚧🚧This page is still under construction.🚧🚧</StyledConstructionP>
+        <StyledButtonRowDiv>
+          <Button
+            variant='contained'
+            onClick={e => {
+              e.preventDefault();
+              axios({
+                method: 'post',
+                url: `${django.url}/user/login/`,
+                headers: {
+                  'Accept': '*/*',
+                  'Content-Type': 'application/json'
+                },
+                data: {
+                  username: username,
+                  password: password
+                }
+              })
+              .then(response => {
+                document.cookie = `djangoToken=${response.data.token}; SameSite=None; Secure`;
+                router.push('menu');
+              })
+              .catch(err => {
+                setOpen(!open);
+              });
+            }}
+          >
+            Sign In
+          </Button>
+          <Button
+            variant='contained'
+            onClick={e => {
+              e.preventDefault();
+              router.push('signup');
+            }}
+          >
+            Sign Up
+          </Button>
+        </StyledButtonRowDiv>
       </form>
     </StyledLoginDiv>
   )
