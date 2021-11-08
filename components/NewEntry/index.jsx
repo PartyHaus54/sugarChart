@@ -6,17 +6,19 @@ import Modal from '../Modal';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import MobileDatePicker from '@mui/lab/MobileDatePicker';
 import MobileTimePicker from '@mui/lab/MobileTimePicker';
-import { TimePicker } from '@material-ui/pickers';
 
 const NewEntry = () => {
   let [glucoseLvl, setGlucoseLvl] = useState(null);
   let [observedDate, setObservedDate] = useState(null);
   let [observedTime, setObservedTime] = useState(null);
+  let [glucoseLvlError, setGlucoseLvlError] = useState(false);
+  let [observedDateError, setObservedDateError] = useState(false);
+  let [observedTimeError, setObservedTimeError] = useState(false);
   let [weight, setWeight] = useState(null);
   const [token, setToken] = useState(null);
 
@@ -30,49 +32,92 @@ const NewEntry = () => {
   });
 
   const handleGlucoseLevelChange = (glucoseLvl) => {
+    if (glucoseLvl) {
+      setGlucoseLvlError(false);
+    }
     setGlucoseLvl(glucoseLvl);
+  }
+
+  const handleObservedDateChange = (date) => {
+    if (date) {
+      setObservedDateError(false);
+    }
+    setObservedDate(date);
+  }
+
+  const handleObservedTimeChange = (time) => {
+    if (time) {
+      setObservedTimeError(false);
+    }
+    setObservedDate(time);
+  }
+
+  const handleWeightChange = (weight) => {
+    setWeight(weight);
   }
 
   const handleNewEntrySubmissionClick = (e) => {
     e.preventDefault();
     let entry = {};
-    entry.glucose_level = Number(glucoseLvl);
+    var glucoseErr = false;
+    if (glucoseLvl) {
+      entry.glucose_level = Number(glucoseLvl);
+    } else {
+      console.log('Entered GLE branch');
 
-    var epochReadingDate = Date.parse(observedDate);
-    console.log('Reading Time preparse', observedDate);
-    var epochDateDifference = observedDate.getTimezoneOffset() * 60 * 1000;
-    epochReadingDate -= epochDateDifference;
 
-    var parsedObservedDate = new Date(epochReadingDate).toISOString().slice(0, 10);
-    entry.observed_date = parsedObservedDate;
+      glucoseErr = true;
+      setGlucoseLvlError(true);
+    }
 
-    var epochReadingTime = Date.parse(observedTime);
-    console.log('Reading Time preparse', observedTime);
-    var epochTimeDifference = observedTime.getTimezoneOffset() * 60 * 1000;
-    epochReadingTime -= epochTimeDifference;
-    var parsedObservedTime = new Date(epochReadingTime).toISOString().slice(11, 19);
-    entry.observed_time = parsedObservedTime;
+    if (observedDate) {
+      var epochReadingDate = Date.parse(observedDate);
+      var epochDateDifference = observedDate.getTimezoneOffset() * 60 * 1000;
+      epochReadingDate -= epochDateDifference;
+
+      var parsedObservedDate = new Date(epochReadingDate).toISOString().slice(0, 10);
+      entry.observed_date = parsedObservedDate;
+    } else {
+      console.log('Entered ODE branch');
+      setObservedDateError(true);
+    }
+
+    if (observedTime) {
+      var epochReadingTime = Date.parse(observedTime);
+      var epochTimeDifference = observedTime.getTimezoneOffset() * 60 * 1000;
+      epochReadingTime -= epochTimeDifference;
+      var parsedObservedTime = new Date(epochReadingTime).toISOString().slice(11, 19);
+      entry.observed_time = parsedObservedTime;
+    } else {
+      console.log('Entered OTE branch');
+      setObservedTimeError(true);
+    }
 
     entry.weight = weight;
 
-    axios({
-      method: 'post',
-      url: `${django.url}/api/readings/`,
-      headers: {
-        'Accept': '*/*',
-        'Authorization': `Token ${token}`,
-        'Content-Type': 'application/json'
-      },
-      data: entry
-    })
-    .then((res) => {
-      console.log('The new entry response is:', res);
-      setModalTitle('Entry Submitted');
-      setModalDescription('Thank you for your Entry');
-      setOpen(true);
-    }).catch(err => {
-      console.log(err);
-    });
+    console.log('Entry', entry);
+
+    if (glucoseLvl && (observedDate && observedTime)) {
+      axios({
+        method: 'post',
+        url: `${django.url}/api/readings/`,
+        headers: {
+          'Accept': '*/*',
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'application/json'
+        },
+        data: entry
+      })
+      .then((res) => {
+        setModalTitle('Entry Submitted');
+        setModalDescription('Thank you for your Entry');
+        setOpen(true);
+      }).catch(err => {
+        console.log('An error happened', err);
+      });
+    } else {
+      console.log('All 3 not true');
+    }
 
     //validate the fields
     //if form is filled out correctly
@@ -107,11 +152,11 @@ const NewEntry = () => {
           id="glucose-level"
           label="Glucose Level"
           required
+          error={glucoseLvlError}
           type="number"
           variant="filled"
           fullWidth
           defaultValue={null}
-          //value={String(glucoseLvl)}
           onChange={(e) => {
             handleGlucoseLevelChange(String(e.target.value));
           }}
@@ -124,14 +169,16 @@ const NewEntry = () => {
           <MobileDatePicker
             label="Date"
             value={observedDate}
+            required
             onOpen={() => { setObservedDate(Date.now()) }}
             onChange={(newDate) => {
-              setObservedDate(newDate);
+              handleObservedDateChange(newDate);
             }}
             renderInput={(params) =>
               <TextField {...params}
                 required
                 fullWidth
+                error={observedDateError}
                 variant="filled"
               />
             }
@@ -145,13 +192,15 @@ const NewEntry = () => {
           <MobileTimePicker
             label="Time"
             value={observedTime}
+            requred
             onOpen={() => {console.log(setObservedTime(Date.now()))}}
             onChange={(newTime) => {
-              setObservedTime(newTime);
+              handleObservedTimeChange(newTime);
             }}
             renderInput={(params) =>
               <TextField {...params}
                 required
+                error={observedTimeError}
                 fullWidth
                 variant="filled"
               />

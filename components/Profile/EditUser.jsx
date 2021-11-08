@@ -71,7 +71,9 @@ const EditUser = (props) => {
   }
 
   useEffect(() => {
-    convertToUTC(props.userInfo.details.date_of_birth);
+    if (props.userInfo.details.date_of_births) {
+      convertToUTC(props.userInfo.details.date_of_birth);
+    }
   }, []);
 
   const convertToUTC = (datetime) => {

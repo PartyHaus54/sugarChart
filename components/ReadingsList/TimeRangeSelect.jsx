@@ -7,11 +7,15 @@ import MenuItem from '@material-ui/core/MenuItem';
 
 import FormHelperText from '@mui/material/FormHelperText';
 
+import styled from '@emotion/styled';
+
 const TimeRangeSelect = ({timeRange, updateTimeSpan}) => {
+  const StyledTimeSpanDiv = styled.div`
+    width: 50%;
+  `;
 
   const handleChange = (e) => {
     updateTimeSpan(e.target.value);
-    //console.log(e.target.value);
   }
 
   const timespans = [
@@ -46,29 +50,30 @@ const TimeRangeSelect = ({timeRange, updateTimeSpan}) => {
   ]
 
   return (
-    <FormControl variant="filled" fullWidth>
-      <InputLabel id="timespan-select-label">Time Span</InputLabel>
-      <Select
-        id="timespan-select"
-        fullWidth
-        defaultValue={timeRange}
-        value={timeRange}
-        label="Time Range"
-        onChange={(e) => {handleChange(e)}}
-      >
-        {
-          timespans.map((option, key) =>
-            <MenuItem
-              key={key}
-              fullWidth
-              value={option.numOfDays}
-            >
-              {option.text}
-            </MenuItem>
-          )
-        }
-      </Select>
-    </FormControl>
+    <StyledTimeSpanDiv>
+      <FormControl variant="filled" fullWidth>
+        <InputLabel id="timespan-select-label">Time Span</InputLabel>
+        <Select
+          id="timespan-select"
+          fullWidth
+          defaultValue={timeRange}
+          value={timeRange}
+          label="Time Range"
+          onChange={(e) => {handleChange(e)}}
+        >
+          {
+            timespans.map((option, key) =>
+              <MenuItem
+                key={key}
+                value={option.numOfDays}
+              >
+                {option.text}
+              </MenuItem>
+            )
+          }
+        </Select>
+      </FormControl>
+    </StyledTimeSpanDiv>
   )
 }
 

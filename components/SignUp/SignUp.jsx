@@ -26,8 +26,16 @@ const SignUp = () => {
   const [dateOfBirth, setDateOfBirth] = useState(null);
   const [weight, setWeight] = useState(null);
   const [timezone, setTimeZone] = useState('');
+  const [usernameAvailable, setUsernameAvailable] = useState(true);
 
   const handleRegistrationClick = (e) => {
+    console.log('Username', username);
+    console.log('Password', password);
+    console.log('DateOfBirth', dateOfBirth);
+    console.log('Weight', weight);
+    console.log('Timezone', timezone);
+    var parsedDOB = new Date(dateOfBirth).toISOString().slice(0, 10);
+    console.log('post REQUEST!!');
     e.preventDefault();
     if (password.length > 4 && password === passwordConfirmation) {
       axios({
@@ -66,7 +74,7 @@ const SignUp = () => {
                 'Content-Type': 'application/json'
               },
               data: {
-                date_of_birth: dateOfBirth,
+                date_of_birth: parsedDOB,
                 weight: weight,
                 timezone: timezone
               }
@@ -77,6 +85,24 @@ const SignUp = () => {
     }
   };
 
+  const handleUsernameChange = (username) => {
+    if (username !== '') {
+      axios({
+        method: 'get',
+        url: `${django.url}/check_username/${username}/`,
+        headers: {
+          'Accept': '*/*',
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => {
+          console.log(response.data);
+          setUsernameAvailable(response.data);
+        });
+    }
+    setUsername(username);
+  }
+
   const router = useRouter();
   return (
     <Box sx={{
@@ -85,16 +111,33 @@ const SignUp = () => {
       justifyContent: 'space-evenly',
       height: '75vh'
     }}>
-      <TextField
-        required
-        id='username'
-        label='Username'
-        variant='filled'
-        fullWidth
-        onChange={(e) => {
-          setUsername(e.target.value);
-        }}
-      />
+      {
+        !usernameAvailable
+          ?
+          <TextField
+            required
+            error
+            helperText="Username Taken"
+            id='username'
+            label='Username'
+            variant='filled'
+            fullWidth
+            onChange={(e) => {
+              handleUsernameChange(e.target.value);
+            }}
+          />
+          :
+          <TextField
+            required
+            id='username'
+            label='Username'
+            variant='filled'
+            fullWidth
+            onChange={(e) => {
+              handleUsernameChange(e.target.value);
+            }}
+          />
+      }
       <TextField
         required
         id='password'

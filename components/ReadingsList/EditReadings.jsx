@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
@@ -10,11 +10,10 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
 import { DateTime } from 'luxon';
-// const StyledTable = styled.table`
-//   border: red solid 2px;
-//   width: 100%;
-//   text-align: center;
-// `;
+import TextField from '@mui/material/TextField';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import MobileDatePicker from '@mui/lab/MobileDatePicker';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -22,12 +21,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
     color: 'white',
     padding: 0,
     textAlign: 'center',
+    cursor: 'pointer'
   },
   [`&.${tableCellClasses.body}`]: {
     color: 'white',
     fontSize: 14,
     padding: 0,
-    textAlign: 'center'
+    textAlign: 'center',
+    cursor: 'pointer'
   }
 }));
 
@@ -39,19 +40,15 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   '&:last-child td, &:last-child th': {
     border: 0,
   },
-  // [`&.${tableRowsClasses.body}`]: {
-  //   fontSize: 14,
-  //   padding: 0,
-  //   textAlign: 'center'
-  // }
 }));
 
 const EditReadings = ({readings, userInfo, displayReadingInEdit, setActiveReading, setOpen}) => {
+  const [observedDate, setObservedDate] = useState(null)
+
   const handleEditClick = (reading) => {
     displayReadingInEdit(reading);
     setActiveReading(reading);
     setOpen(true);
-    console.log(`Modal incoming for reading ${reading}`);
   }
 
   return (
@@ -97,34 +94,6 @@ const EditReadings = ({readings, userInfo, displayReadingInEdit, setActiveReadin
         </TableBody>
       </Table>
     </TableContainer>
-    // <StyledTable>
-    //   <thead>
-    //     <tr>
-    //       <th>Date</th>
-    //       <th>Time</th>
-    //       <th>Reading</th>
-    //       {userInfo.details.show_weight && <th>Weight</th>}
-    //       {userInfo.details.show_age && <th>Age</th>}
-    //     </tr>
-    //   </thead>
-    //   <tbody>
-    //     {readings.map(reading => (
-    //       <tr key={reading.id} onClick={() => { handleEditClick(reading); }} >
-    //         <td className="date">{DateTime.fromISO(reading.observed_date).toFormat('LL-dd-yyyy')}</td>
-    //         {
-    //           userInfo.details.show_24_hours
-    //             ?
-    //             <td className="time">{DateTime.fromISO(reading.observed_time).toFormat('T')}</td>
-    //             :
-    //             <td className="time">{DateTime.fromISO(reading.observed_time).toFormat('t')}</td>
-    //         }
-    //         <td className="reading">{reading.glucose_level}</td>
-    //         {userInfo.details.show_weight && <td>{reading.weight_at_reading}</td>}
-    //         {userInfo.details.show_age && <td>{reading.age_at_reading}</td>}
-    //       </tr>
-    //     ))}
-    //   </tbody>
-    // </StyledTable>
   )
 }
 export default EditReadings;
