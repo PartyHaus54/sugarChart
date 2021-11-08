@@ -28,6 +28,8 @@ const SignUp = () => {
   const [timezone, setTimeZone] = useState('');
   const [usernameAvailable, setUsernameAvailable] = useState(true);
 
+  const [usernameAvailable, setUsernameAvailable] = useState(true);
+
   const handleRegistrationClick = (e) => {
     console.log('Username', username);
     console.log('Password', password);
@@ -95,10 +97,9 @@ const SignUp = () => {
           'Content-Type': 'application/json'
         }
       })
-        .then(response => {
-          console.log(response.data);
-          setUsernameAvailable(response.data);
-        });
+      .then(response => {
+        setUsernameAvailable(response.data);
+      });
     }
     setUsername(username);
   }
