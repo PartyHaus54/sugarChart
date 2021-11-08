@@ -35,7 +35,6 @@ const DashBoard = ({dash}) => {
 
   const getAverage = () => {
     var token = django.tokenLoader();
-    console.log('token', token);
     axios({
       method: 'get',
       url: `${django.url}/user_info/`,
@@ -46,7 +45,6 @@ const DashBoard = ({dash}) => {
       }
     })
     .then(response => {
-      console.log(response.data[0]);
       var defaultTimespan = response.data[0].details.default_timespan;
       axios({
         method: 'get',
@@ -69,7 +67,6 @@ const DashBoard = ({dash}) => {
         });
       })
       .catch(err => {
-        console.log('handle here!');
         router.push('/');
       });
   }

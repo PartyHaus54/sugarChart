@@ -33,8 +33,8 @@ const DisplayUser = ({userInfo, toggleDisplayMode, logout}) => {
           <AccountCircleIcon className={styles.accountIcon} />
         }
         <h1>{userInfo.username}</h1>
-        <h3>DOB: {DateTime.fromISO(userInfo.details.date_of_birth).toFormat('LL-dd-yyyy')}</h3>
-        <h3>Weight: {userInfo.details.weight}</h3>
+        <h3>DOB: {userInfo.details.date_of_birth ? DateTime.fromISO(userInfo.details.date_of_birth).toFormat('LL-dd-yyyy') : 'No DOB Entered'}</h3>
+        <h3>Weight: {userInfo.details.weight ? userInfo.details.weight : 'No Weight Entered'}</h3>
       </div>
       <StyledSaveCancelRowDiv>
         <Button

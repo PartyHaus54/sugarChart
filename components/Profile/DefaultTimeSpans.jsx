@@ -52,7 +52,7 @@ const DefaultTimeSpans = ({defaultTimespan, setDefaultTimespan}) => {
 
   return (
     <FormControl variant="filled" fullWidth>
-      <InputLabel id="timespan-label">Timespan</InputLabel>
+      <InputLabel id="timespan-label">Default Timespan</InputLabel>
       <Select
         id="default-timespan-dropdown"
         labelId="timespan-label"

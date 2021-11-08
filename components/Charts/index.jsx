@@ -20,6 +20,15 @@ import styled from '@emotion/styled';
 
 const StyledSettingsBar = styled.div`
   display: flex;
+    justify-content: space-evenly;
+  width: 100%;
+`;
+
+const StyledEditToggleDiv = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  alight-content: right;
+  width: 25%;
 `;
 
 const Charts = (props) => {
@@ -63,21 +72,6 @@ const Charts = (props) => {
 
   useEffect(() => {
     getUserInfoForReadings();
-    // var token = django.tokenLoader();
-
-    // axios({
-    //   method: 'get',
-    //   url: `${django.url}/api/readings_since/${timeRange}/`,
-    //   headers: {
-    //     'Accept': '*/*',
-    //     "Authorization": `Token ${token}`,
-    //     'Content-Type': 'application/json'
-    //   }
-    // })
-    // .then(response => {
-    //   setToken(token);
-    //   setReadings(response.data);
-    // });
   }, []);
 
   const getUserInfoForReadings = () => {
@@ -111,9 +105,6 @@ const Charts = (props) => {
   }
 
   const updateTimeSpan = (days) => {
-    //TODO:
-    //GET users readings for timeRange
-    //display chart with users readings for timeRange
     setTimeRange(days);
     axios({
       method: 'get',
@@ -147,6 +138,13 @@ const Charts = (props) => {
   };
 
   const updateReading = (date, time, glucoseLevel, weight) => {
+    var parsedObservedDate = new Date(date).toISOString().slice(0, 10);
+    var updateData = {
+      observed_date: parsedObservedDate,
+      observed_time: time,
+      glucose_level: glucoseLevel,
+      weight_at_reading: weight
+    };
     axios({
       method: 'put',
       url: `${django.url}/api/readings/${activeReading.id}/`,
@@ -155,12 +153,7 @@ const Charts = (props) => {
         'Authorization': `Token ${token}`,
         'Content-Type': 'application/json'
       },
-      data: {
-        observed_date: date,
-        observed_time: time,
-        glucose_level: glucoseLevel,
-        weight_at_reading: weight
-      }
+      data: updateData
     })
     .then(() => {
       axios({
@@ -218,44 +211,23 @@ const Charts = (props) => {
         setOpen={setOpen}
         toggleView={() => { setOpen(!open); }}
       />
-      {/* <h1>{`${timeRange} Day Readings`}</h1> */}
-      {/* <Chart timeRange={timeRange}
-        readings={readings}
-        activeReading={activeReading}
-      /> */}
       <Chart timeRange={timeRange}
         readings={readings}
         activeReading={activeReading}
       />
       <StyledSettingsBar id="chart-breakpoint-target">
         <TimeRangeSelect timeRange={timeRange} updateTimeSpan={updateTimeSpan} />
-        {/* <Dropdown
-          id="timeRange"
-          label="Time Range"
-          value={timeRange}
-          sx={{width: 0}}
-          options={[
-            {text: '1 Day',
-            numOfDays: 1},
-            {text: '1 Week',
-            numOfDays: 7},
-            {text: '1 Month',
-            numOfDays: 30},
-            {text: '3 Months',
-            numOfDays: 90},
-            {text: '6 Months',
-            numOfDays: 180},
-            {text: 'Year',
-            numOfDays: 365},
-            {text: 'Total',
-            numOfDays: 0}
-          ]}
-          handleChange={(days) => {
-            console.log('days', days);
-            changeHandler(days);
-          }}
-        /> */}
-        <FormControlLabel
+        <StyledEditToggleDiv className="MuiInputBase-root MuiFilledInput-root MuiFilledInput-underline MuiInputBase-formControl">
+          <p>
+            Edit Readings
+          </p>
+          <Checkbox
+            checked={editingReadings}
+            value={editingReadings}
+            onChange={() => { handleEditModeClick(!editingReadings) }}
+          />
+        </StyledEditToggleDiv>
+        {/* <FormControlLabel
           value={editingReadings}
           variant="filled"
           sx={{textAlign: 'right'}}
@@ -267,7 +239,7 @@ const Charts = (props) => {
           }
           label="Edit"
           labelPlacement="start"
-        />
+        /> */}
       </StyledSettingsBar>
       {
         !editingReadings

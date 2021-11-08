@@ -81,6 +81,7 @@ const Profile = ({}) => {
   }
 
   const saveUserInfo = () => {
+    var parsedDOB = new Date(dateOfBirth).toISOString().slice(0, 10);
     console.log('put REQUEST!!');
     axios({
       method: 'put',
@@ -91,7 +92,7 @@ const Profile = ({}) => {
         'Content-Type': 'application/json'
       },
       data: {
-        date_of_birth: dateOfBirth,
+        date_of_birth: parsedDOB,
         weight: weight,
         timezone: timezone,
         default_timespan: defaultTimespan,
