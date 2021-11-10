@@ -12,13 +12,14 @@ const StyledAxisText = styled.text`
   //font-size: 24px;
 `;
 
-const Chart = ({timeRange, readings, activeReading }) => {
+const Chart = ({timeRange, readings, activeReading, chartSize}) => {
   const [viewBox, setViewBox] = useState({width: 10, height: 10});
   const [SVGWidth, setSVGWidth] = useState(500);
   const [SVGHeight, setSVGHeight] = useState(500);
   const [axisOrigin, setAxisOrigin] = useState('');
   const [xRenderConverter, setXRenderConverter] = useState(null);
   const [yRenderConverter, setYRenderConverter] = useState(null);
+  const [savedReadings, setSavedReadings] = useState(readings);
 
   const [displayRanges, setDisplayRanges] = useState([]);
 
@@ -28,9 +29,11 @@ const Chart = ({timeRange, readings, activeReading }) => {
 
   const [xAxisLabels, setXAxisLabels] = useState({ticks: [], labels: []});
 
+  const [SVGLoaded, setSVGLoaded] = useState(false);
+
   const glucoseLevelRanges = [
     {
-      label: 'Diabetes',
+      label: 'Diabetes ',
       rangeMin: 126,
       rangeMax: 500,
       color: 'rgba(255, 0, 0, 0.2)'
@@ -59,7 +62,8 @@ const Chart = ({timeRange, readings, activeReading }) => {
 
   useEffect(() => {
     renderSVG();
-  }, [readings, activeReading.id]);
+    console.log('Chart is seeing size ' + chartSize)
+  }, [readings, activeReading.id, chartSize]);
 
   const renderSVG = () => {
     var viewBox = setSVGSize();
