@@ -67,29 +67,30 @@ const Charts = (props) => {
 
   var activeReadingPlaceholder = {};
   const [activeReading, setActiveReading] = useState(activeReadingPlaceholder);
-  //const [activePoint, setActivePoint] = useState({ label: 'Active point here', x: 5, y: 5, size: 6, color: 'red' });
   const [open, setOpen] = useState(false);
+  const [chartSize, setChartSize] = useState(1200);
 
   useEffect(() => {
     getUserInfoForReadings();
   }, []);
 
-  const [chartSize, setChartSize] = useState(window.innerWidth);
 
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 600) {
-        console.log(`Chart size ${chartSize} at Windows size ${window.innerWidth}`);
         setChartSize(window.innerWidth);
-      } else if (window.innerWidth < 900 && (chartSize >= 900 || chartSize < 600)) {
-        console.log(`Chart size ${chartSize} at Windows size ${window.innerWidth}`);
-        setChartSize(window.innerWidth);
-      } else if (window.innerWidth < 1200 && (chartSize >= 1200 || chartSize < 900)) {
-        console.log(`Chart size ${chartSize} at Windows size ${window.innerWidth}`);
-        setChartSize(window.innerWidth);
-      } else if (window.innerWidth >= 1200 && (chartSize < 1200)) {
-        console.log(`Chart size ${chartSize} at Windows size ${window.innerWidth}`);
-        setChartSize(window.innerWidth);
+      } else if (window.innerWidth < 900) {
+        if (chartSize >= 900 || chartSize < 600) {
+          setChartSize(window.innerWidth);
+        }
+      } else if (window.innerWidth < 1200) {
+        if (chartSize >= 1200 || chartSize < 900) {
+          setChartSize(window.innerWidth);
+        }
+      } else if (window.innerWidth >= 1200) {
+        if (chartSize < 1200) {
+          setChartSize(window.innerWidth);
+        }
       }
     }
     window.addEventListener('resize', handleResize);
