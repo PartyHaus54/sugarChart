@@ -29,6 +29,7 @@ const StyledEditToggleDiv = styled.div`
   justify-content: space-evenly;
   alight-content: right;
   width: 25%;
+  padding-left: 12px;
 `;
 
 const Charts = (props) => {
@@ -66,13 +67,36 @@ const Charts = (props) => {
 
   var activeReadingPlaceholder = {};
   const [activeReading, setActiveReading] = useState(activeReadingPlaceholder);
-  const [activePoint, setActivePoint] = useState({ label: 'Active point here', x: 5, y: 5, size: 6, color: 'red' });
+  //const [activePoint, setActivePoint] = useState({ label: 'Active point here', x: 5, y: 5, size: 6, color: 'red' });
   const [open, setOpen] = useState(false);
-
 
   useEffect(() => {
     getUserInfoForReadings();
   }, []);
+
+  const [chartSize, setChartSize] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 600) {
+        console.log(`Chart size ${chartSize} at Windows size ${window.innerWidth}`);
+        setChartSize(window.innerWidth);
+      } else if (window.innerWidth < 900 && (chartSize >= 900 || chartSize < 600)) {
+        console.log(`Chart size ${chartSize} at Windows size ${window.innerWidth}`);
+        setChartSize(window.innerWidth);
+      } else if (window.innerWidth < 1200 && (chartSize >= 1200 || chartSize < 900)) {
+        console.log(`Chart size ${chartSize} at Windows size ${window.innerWidth}`);
+        setChartSize(window.innerWidth);
+      } else if (window.innerWidth >= 1200 && (chartSize < 1200)) {
+        console.log(`Chart size ${chartSize} at Windows size ${window.innerWidth}`);
+        setChartSize(window.innerWidth);
+      }
+    }
+    window.addEventListener('resize', handleResize);
+    return _ => {
+      window.removeEventListener('resize', handleResize)
+    }
+  });
 
   const getUserInfoForReadings = () => {
     var newToken = django.tokenLoader();
@@ -214,12 +238,13 @@ const Charts = (props) => {
       <Chart timeRange={timeRange}
         readings={readings}
         activeReading={activeReading}
+        chartSize={chartSize}
       />
       <StyledSettingsBar id="chart-breakpoint-target">
         <TimeRangeSelect timeRange={timeRange} updateTimeSpan={updateTimeSpan} />
         <StyledEditToggleDiv className="MuiInputBase-root MuiFilledInput-root MuiFilledInput-underline MuiInputBase-formControl">
           <p>
-            Edit Readings
+            Edit
           </p>
           <Checkbox
             checked={editingReadings}
