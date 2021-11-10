@@ -71,7 +71,7 @@ const EditUser = (props) => {
   }
 
   useEffect(() => {
-    if (props.userInfo.details.date_of_births) {
+    if (props.userInfo.details.date_of_birth) {
       convertToUTC(props.userInfo.details.date_of_birth);
     }
   }, []);
@@ -82,6 +82,7 @@ const EditUser = (props) => {
     var prEpoch = Date.parse(prematureDate);
     prEpoch += offset * 60000
     var originalDate = new Date(prEpoch);
+    console.log('Original Date', originalDate);
 
     setDateOfBirth(originalDate);
   }

@@ -82,7 +82,6 @@ const Profile = ({}) => {
 
   const saveUserInfo = () => {
     var parsedDOB = new Date(dateOfBirth).toISOString().slice(0, 10);
-    console.log('put REQUEST!!');
     axios({
       method: 'put',
       url: `${django.url}/api/user_details/${userInfo.details.id}/`,

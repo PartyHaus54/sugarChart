@@ -21,7 +21,7 @@ const StyledLoginDiv = styled.div`
 
   max-width: 30rem;
   margin: 0 auto;
-  h1{
+  h1 {
     color: #1e7373;
     padding: 3rem 1rem 1rem 1rem;
   }

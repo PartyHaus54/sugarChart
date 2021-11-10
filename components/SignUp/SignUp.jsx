@@ -28,16 +28,8 @@ const SignUp = () => {
   const [timezone, setTimeZone] = useState('');
   const [usernameAvailable, setUsernameAvailable] = useState(true);
 
-  const [usernameAvailable, setUsernameAvailable] = useState(true);
-
   const handleRegistrationClick = (e) => {
-    console.log('Username', username);
-    console.log('Password', password);
-    console.log('DateOfBirth', dateOfBirth);
-    console.log('Weight', weight);
-    console.log('Timezone', timezone);
     var parsedDOB = new Date(dateOfBirth).toISOString().slice(0, 10);
-    console.log('post REQUEST!!');
     e.preventDefault();
     if (password.length > 4 && password === passwordConfirmation) {
       axios({

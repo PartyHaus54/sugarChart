@@ -45,11 +45,15 @@ const NewEntry = () => {
     setObservedDate(date);
   }
 
+  const handleObservedTimeOpen = () => {
+    setObservedTime(Date.now());
+  }
+  
   const handleObservedTimeChange = (time) => {
     if (time) {
       setObservedTimeError(false);
     }
-    setObservedDate(time);
+    setObservedTime(time);
   }
 
   const handleWeightChange = (weight) => {
@@ -193,7 +197,7 @@ const NewEntry = () => {
             label="Time"
             value={observedTime}
             requred
-            onOpen={() => {console.log(setObservedTime(Date.now()))}}
+            onOpen={handleObservedTimeOpen}
             onChange={(newTime) => {
               handleObservedTimeChange(newTime);
             }}
