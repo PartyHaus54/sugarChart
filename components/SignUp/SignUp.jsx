@@ -26,10 +26,10 @@ const SignUp = () => {
   const [dateOfBirth, setDateOfBirth] = useState(null);
   const [weight, setWeight] = useState(null);
   const [timezone, setTimeZone] = useState('');
-
   const [usernameAvailable, setUsernameAvailable] = useState(true);
 
   const handleRegistrationClick = (e) => {
+    var parsedDOB = new Date(dateOfBirth).toISOString().slice(0, 10);
     e.preventDefault();
     if (password.length > 4 && password === passwordConfirmation) {
       axios({
@@ -68,7 +68,7 @@ const SignUp = () => {
                 'Content-Type': 'application/json'
               },
               data: {
-                date_of_birth: dateOfBirth,
+                date_of_birth: parsedDOB,
                 weight: weight,
                 timezone: timezone
               }
@@ -107,29 +107,29 @@ const SignUp = () => {
       {
         !usernameAvailable
           ?
-        <TextField
-          required
-          error
-          helperText="Username Taken"
-          id='username'
-          label='Username'
-          variant='filled'
-          fullWidth
-          onChange={(e) => {
-            handleUsernameChange(e.target.value);
-          }}
-        />
+          <TextField
+            required
+            error
+            helperText="Username Taken"
+            id='username'
+            label='Username'
+            variant='filled'
+            fullWidth
+            onChange={(e) => {
+              handleUsernameChange(e.target.value);
+            }}
+          />
           :
-        <TextField
-          required
-          id='username'
-          label='Username'
-          variant='filled'
-          fullWidth
-          onChange={(e) => {
-            handleUsernameChange(e.target.value);
-          }}
-        />
+          <TextField
+            required
+            id='username'
+            label='Username'
+            variant='filled'
+            fullWidth
+            onChange={(e) => {
+              handleUsernameChange(e.target.value);
+            }}
+          />
       }
       <TextField
         required

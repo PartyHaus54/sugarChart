@@ -81,7 +81,7 @@ const Profile = ({}) => {
   }
 
   const saveUserInfo = () => {
-    console.log('put REQUEST!!');
+    var parsedDOB = new Date(dateOfBirth).toISOString().slice(0, 10);
     axios({
       method: 'put',
       url: `${django.url}/api/user_details/${userInfo.details.id}/`,
@@ -91,7 +91,7 @@ const Profile = ({}) => {
         'Content-Type': 'application/json'
       },
       data: {
-        date_of_birth: dateOfBirth,
+        date_of_birth: parsedDOB,
         weight: weight,
         timezone: timezone,
         default_timespan: defaultTimespan,

@@ -1,24 +1,5 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-#security
-server/sugarpy/sugarpy/secrets.py
-
-# django
-server/sugar-venv/
-<<<<<<< HEAD
-=======
-server/sugarpy/sugarpy/__pycache__/
-server/sugarpy/readings/__pycache__/
-server/sugarpy/readings/migrations/
-server/sugarpy/sugarchart_user/__pycache__/
-server/sugarpy/sugarchart_user/migrations/
-server/sugarpy/user_details/migrations/
-server/sugarpy/user_details/__pycache__/
-server/sugarpy/readings/__pycache__/
-server/sugarpy/sugarpy/__pycache__/
-
->>>>>>> 35be74edb31c4f8150217f5424fbd5efe24b86a1
-
 # dependencies
 /node_modules
 /.pnp
