@@ -48,7 +48,7 @@ const NewEntry = () => {
   const handleObservedTimeOpen = () => {
     setObservedTime(Date.now());
   }
-
+  
   const handleObservedTimeChange = (time) => {
     if (time) {
       setObservedTimeError(false);
@@ -87,7 +87,6 @@ const NewEntry = () => {
     }
 
     if (observedTime) {
-      console.log('observedTime', observedTime);
       var epochReadingTime = Date.parse(observedTime);
       var epochTimeDifference = observedTime.getTimezoneOffset() * 60 * 1000;
       epochReadingTime -= epochTimeDifference;
