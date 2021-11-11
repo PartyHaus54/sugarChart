@@ -62,7 +62,6 @@ const Chart = ({timeRange, readings, activeReading, chartSize}) => {
 
   useEffect(() => {
     renderSVG();
-    console.log('Chart is seeing size ' + chartSize)
   }, [readings, activeReading.id, chartSize]);
 
   const renderSVG = () => {
