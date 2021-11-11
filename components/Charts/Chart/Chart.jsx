@@ -66,7 +66,7 @@ const Chart = ({timeRange, readings, activeReading, chartSize}) => {
 
   const renderSVG = () => {
     var viewBox = setSVGSize();
-    var padding = setPaddingPx(viewBox, 0.055, .05, 0.1, .05);
+    var padding = setPaddingPx(viewBox, 17, 28, 32, 25);
     var origin = createAxisLines(viewBox, padding);
     var convertToX = createTimeToXConverter(viewBox, padding, timeRange, readings);
     var convertToY = createGlucoseLevelToYConverter(viewBox, padding, readings, glucoseLevelRanges[2]);
@@ -103,10 +103,14 @@ const Chart = ({timeRange, readings, activeReading, chartSize}) => {
 
   const setPaddingPx = (viewBox, paddingTop, paddingRight, paddingBottom, paddingLeft) => {
     return {
-      top: viewBox.height * paddingTop,
-      right: viewBox.width * paddingRight,
-      bottom: viewBox.height * paddingBottom,
-      left: viewBox.width * paddingLeft
+      top: paddingTop,
+      right: paddingRight,
+      bottom: paddingBottom,
+      left: paddingLeft
+      // top: viewBox.height * paddingTop,
+      // right: viewBox.width * paddingRight,
+      // bottom: viewBox.height * paddingBottom,
+      // left: viewBox.width * paddingLeft
     }
   }
 
@@ -253,7 +257,7 @@ const Chart = ({timeRange, readings, activeReading, chartSize}) => {
 
     if (dayCount === 0) {
       var startEpoch = Date.parse(readings[readings.length - 1].observed_datetime);
-      dayCount = Math.floor((epochMidnight - startEpoch) / 86400000);
+      dayCount = Math.ceil((epochMidnight - startEpoch) / 86400000);
     }
     var timeDataMin = Date.now() - (86400000 * dayCount);
 

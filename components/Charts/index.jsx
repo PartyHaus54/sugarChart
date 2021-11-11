@@ -20,7 +20,7 @@ import styled from '@emotion/styled';
 
 const StyledSettingsBar = styled.div`
   display: flex;
-    justify-content: space-evenly;
+  justify-content: space-evenly;
   width: 100%;
 `;
 
