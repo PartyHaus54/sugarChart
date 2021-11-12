@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import django from '../../utils/django';
 
 import LoginFailureModal from '../Modal/LoginFailureModal.jsx';
+import PasswordFailureModal from '../Modal/PasswordFailureModal.jsx';
 
 import styled from '@emotion/styled';
 
@@ -57,15 +58,26 @@ const LogIn = () => {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [warningOpen, setWarningOpen] = useState(true);
+
+  const warningTitle = 'Disclaimer';
+  const warningDescription = 'This site remains under development and resources have not yet been invested for security. Please assume any and all information can be intercepted as you demo this product.';
 
   return (
     <StyledLoginDiv>
-      <LoginFailureModal
+      <PasswordFailureModal
+        modalOpen={warningOpen}
+        setModalOpen={setWarningOpen}
+        toggleView={ () => { setWarningOpen(!warningOpen)}}
+        title={warningTitle}
+        description={warningDescription}
+      />
+      {/* <LoginFailureModal
         open={open}
         setOpen={setOpen}
         toggleView={() => { setOpen(!open); }}
-      />
+      /> */}
       <h1>Sugar Chart</h1>
       <div>
         <Image className='logo' src={logo} alt='butterfly logo'/>

@@ -5,6 +5,8 @@ server/sugarpy/sugarpy/secrets.py
 
 # django
 server/sugar-venv/
+server/sugar-venv-2/
+
 
 # dependencies
 /node_modules
